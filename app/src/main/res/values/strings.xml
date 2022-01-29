@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">HafizAlQuran</string>
+    <string name="makiaMedaniaDescription" translatable="false">Surah can be either makia or medania and this image view display an image that indicate whether the surah is makia or medania.</string>
 </resources>
