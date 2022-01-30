@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface SurahsDao {
     /*the function is responsible for getting all the suar from the database*/
-    @Query("SELECT * FROM suar ORDER BY surahNumber ASC")
+    @Query("SELECT * FROM suar ORDER BY id ASC")
     fun getAllSuar(): Flow<List<Surah>>
 
     /*when the usr saved a surah or feel they need to memorize it, then this function
