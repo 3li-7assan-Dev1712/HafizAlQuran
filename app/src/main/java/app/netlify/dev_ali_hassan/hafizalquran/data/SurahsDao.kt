@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface SurahsDao {
     /*the function is responsible for getting all the suar from the database*/
     @Query("SELECT * FROM suar ORDER BY surahNumber ASC")
-    fun getAllSura(): Flow<List<Surah>>
+    fun getAllSuar(): Flow<List<Surah>>
 
     /*when the usr saved a surah or feel they need to memorize it, then this function
     * will update the Surah state in the database.*/

@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 * Surah root to indicate whether the surah is Makia or Medania
 * */
 enum class SurahRoot{
-    MAKIA, MEDANIA
+    MAKIA, MADANIA
 }
 /*
 * Surah state to let the user know whether they saved this surah, need some revision
@@ -20,8 +20,7 @@ enum class SurahState {
 data class Surah (
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val surahName: String,
-    val surahRoot: SurahRoot,
-    val surahNumber: Int,
+    val isSurahMakia: Boolean,
     val surahPagesCount: Int,
-    val surahState: SurahState = SurahState.NOT_SAVED
+    val surahState: Int = 1
     )

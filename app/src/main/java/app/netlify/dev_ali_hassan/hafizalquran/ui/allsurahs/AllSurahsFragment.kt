@@ -30,7 +30,7 @@ class AllSurahsFragment : Fragment(R.layout.all_surahs_fragment) {
 fun provideListSurahForTest(): List<Surah> {
     val list = mutableListOf<Surah>()
     for (i in 0.. 113)  {
-        list.add(Surah("al-Maidah", SurahRoot.MAKIA, i +1, 2))
+        list.add(Surah(surahName = "al-Maidah", isSurahMakia = true, surahPagesCount =  2))
     }
     return list
 }
