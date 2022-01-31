@@ -18,13 +18,12 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class AllSurahsFragment : Fragment(R.layout.all_surahs_fragment) {
 
-    private val surahsViewModel: AllSurahsViewModel by viewModels<AllSurahsViewModel>()
-
+    private val surahsViewModel: AllSurahsViewModel by viewModels()
     private lateinit var binding: AllSurahsFragmentBinding
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = AllSurahsAdapter()
+        val adapter = AllSurahsAdapter(requireContext())
         binding = AllSurahsFragmentBinding.bind(view)
         binding.apply {
             allSurahsRecyclerView.adapter = adapter
@@ -34,20 +33,5 @@ class AllSurahsFragment : Fragment(R.layout.all_surahs_fragment) {
         }
 
     }
-/*
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return binding?.root
-    }*/
-}
 
-fun provideListSurahForTest(): List<Surah> {
-    val list = mutableListOf<Surah>()
-    for (i in 0..113) {
-        list.add(Surah(surahName = "al-Maidah", isSurahMakia = true, surahPagesCount = 2))
-    }
-    return list
 }

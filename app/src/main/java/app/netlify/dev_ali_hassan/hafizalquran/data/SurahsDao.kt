@@ -5,6 +5,10 @@ import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Data Access Object (DAO) our interface for providing convenient functions
+ * to make transaction between the app and the database.
+ */
 @Dao
 interface SurahsDao {
     /*the function is responsible for getting all the suar from the database*/

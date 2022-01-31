@@ -43,26 +43,26 @@ class AllSurahsAdapter(val context: Context) :
                 when (surah.surahState) {
                     1 -> {
                         surahIsNotMemorizedImageView.setBackgroundColor(
-                            context.resources.getColor(R.color.red)
+                            context.resources.getColor(R.color.red, context.theme)
                         )
                     }
                     2 -> {
                         surahIsNotMemorizedImageView.setBackgroundColor(
-                            context.resources.getColor(R.color.orange)
+                            context.resources.getColor(R.color.orange, context.theme)
                         )
                         surahNeedsRevisionImageView.setBackgroundColor(
-                            context.resources.getColor(R.color.orange)
+                            context.resources.getColor(R.color.orange, context.theme)
                         )
                     }
                     3 -> {
                         surahIsNotMemorizedImageView.setBackgroundColor(
-                            context.resources.getColor(R.color.green)
+                            context.resources.getColor(R.color.green, context.theme)
                         )
                         surahNeedsRevisionImageView.setBackgroundColor(
-                            context.resources.getColor(R.color.green)
+                            context.resources.getColor(R.color.green, context.theme)
                         )
                         surahIsMemorizedImageView.setBackgroundColor(
-                            context.resources.getColor(R.color.green)
+                            context.resources.getColor(R.color.green, context.theme)
                         )
                     }
                 }

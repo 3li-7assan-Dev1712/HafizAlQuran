@@ -13,11 +13,15 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class AppModule {
 
+    /*The function below will provide the database for the app with prepared data in it
+    * the database file is stored in the assests folder.*/
     @Singleton
     @Provides
     fun provideSurahDatabase(app: Application) =
         Room.databaseBuilder(app, SurahDatabase::class.java, "surah_database")
-            .fallbackToDestructiveMigration().build()
+            .fallbackToDestructiveMigration()
+            .createFromAsset("database/surah_database.db")
+            .build()
 
     @Provides
     fun provideSurahDao(surahDatabase: SurahDatabase) =
