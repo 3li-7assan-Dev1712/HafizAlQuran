@@ -1,21 +1,72 @@
 package app.netlify.dev_ali_hassan.hafizalquran.ui.allsurahs
 
-import android.text.Layout
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import app.netlify.dev_ali_hassan.hafizalquran.R
 import app.netlify.dev_ali_hassan.hafizalquran.data.Surah
 import app.netlify.dev_ali_hassan.hafizalquran.databinding.SurahListItemBinding
 
-class AllSurahsAdapter : ListAdapter<Surah, AllSurahsAdapter.SurahViewHolder>(SurahDiffUtil()) {
+class AllSurahsAdapter(val context: Context) :
+    ListAdapter<Surah, AllSurahsAdapter.SurahViewHolder>(SurahDiffUtil()) {
 
     inner class SurahViewHolder(private val binding: SurahListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(surah: Surah) {
-            binding.surahNumberTextView.text = "4"
-            binding.surahNameTextView.text = surah.surahName
+
+            binding.apply {
+                surahNumberTextView.text = surah.id.toString()
+                surahNameTextView.text = surah.surahName
+                pageCountTextView.text = surah.surahPagesCount.toString()
+                if (surah.isSurahMakia) {
+                    makiaMadaniaImageViewIndicator.setImageDrawable(
+                        ResourcesCompat.getDrawable(
+                            context.resources,
+                            R.drawable.makia_img,
+                            context.theme
+                        )
+                    )
+                } else {
+                    makiaMadaniaImageViewIndicator.setImageDrawable(
+                        ResourcesCompat.getDrawable(
+                            context.resources,
+                            R.drawable.madania_img,
+                            context.theme
+                        )
+                    )
+                }
+
+                when (surah.surahState) {
+                    1 -> {
+                        surahIsNotMemorizedImageView.setBackgroundColor(
+                            context.resources.getColor(R.color.red)
+                        )
+                    }
+                    2 -> {
+                        surahIsNotMemorizedImageView.setBackgroundColor(
+                            context.resources.getColor(R.color.orange)
+                        )
+                        surahNeedsRevisionImageView.setBackgroundColor(
+                            context.resources.getColor(R.color.orange)
+                        )
+                    }
+                    3 -> {
+                        surahIsNotMemorizedImageView.setBackgroundColor(
+                            context.resources.getColor(R.color.green)
+                        )
+                        surahNeedsRevisionImageView.setBackgroundColor(
+                            context.resources.getColor(R.color.green)
+                        )
+                        surahIsMemorizedImageView.setBackgroundColor(
+                            context.resources.getColor(R.color.green)
+                        )
+                    }
+                }
+            }
         }
     }
 

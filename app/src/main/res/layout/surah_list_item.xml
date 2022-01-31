@@ -37,7 +37,7 @@
     <!--    This image view will display one of two images Mekka or Madian image
     to indicate whether the Surah is Medania or Makkia-->
     <ImageView
-        android:id="@+id/MakiaMedaniaImageViewIndicator"
+        android:id="@+id/makiaMadaniaImageViewIndicator"
         android:layout_width="56dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
@@ -76,7 +76,7 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/MakiaMedaniaImageViewIndicator">
+        app:layout_constraintTop_toTopOf="@id/makiaMadaniaImageViewIndicator">
 
         <ImageView
             android:id="@+id/surahIsMemorizedImageView"
