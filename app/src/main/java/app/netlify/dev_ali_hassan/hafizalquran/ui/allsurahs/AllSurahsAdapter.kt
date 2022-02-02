@@ -22,6 +22,7 @@ class AllSurahsAdapter(val context: Context) :
                 surahNumberTextView.text = surah.id.toString()
                 surahNameTextView.text = surah.surahName
                 pageCountTextView.text = surah.surahPagesCount.toString()
+
                 if (surah.isSurahMakia) {
                     makiaMadaniaImageViewIndicator.setImageDrawable(
                         ResourcesCompat.getDrawable(
@@ -43,26 +44,35 @@ class AllSurahsAdapter(val context: Context) :
                 when (surah.surahState) {
                     1 -> {
                         surahIsNotMemorizedImageView.setBackgroundColor(
-                            context.resources.getColor(R.color.red, context.theme)
+                            ResourcesCompat.getColor(context.resources, R.color.red, context.theme)
+                        )
+                        surahNeedsRevisionImageView.setBackgroundColor(
+                            ResourcesCompat.getColor(context.resources, R.color.white, context.theme)
+                        )
+                        surahIsNotMemorizedImageView.setBackgroundColor(
+                            ResourcesCompat.getColor(context.resources, R.color.white, context.theme)
                         )
                     }
                     2 -> {
                         surahIsNotMemorizedImageView.setBackgroundColor(
-                            context.resources.getColor(R.color.orange, context.theme)
+                            ResourcesCompat.getColor(context.resources, R.color.orange, context.theme)
                         )
                         surahNeedsRevisionImageView.setBackgroundColor(
-                            context.resources.getColor(R.color.orange, context.theme)
+                            ResourcesCompat.getColor(context.resources, R.color.orange, context.theme)
+                        )
+                        surahIsMemorizedImageView.setBackgroundColor(
+                            ResourcesCompat.getColor(context.resources, R.color.white, context.theme)
                         )
                     }
                     3 -> {
                         surahIsNotMemorizedImageView.setBackgroundColor(
-                            context.resources.getColor(R.color.green, context.theme)
+                            ResourcesCompat.getColor(context.resources, R.color.green, context.theme)
                         )
                         surahNeedsRevisionImageView.setBackgroundColor(
-                            context.resources.getColor(R.color.green, context.theme)
+                            ResourcesCompat.getColor(context.resources, R.color.green, context.theme)
                         )
                         surahIsMemorizedImageView.setBackgroundColor(
-                            context.resources.getColor(R.color.green, context.theme)
+                            ResourcesCompat.getColor(context.resources, R.color.green, context.theme)
                         )
                     }
                 }
