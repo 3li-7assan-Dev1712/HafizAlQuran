@@ -11,11 +11,20 @@ import app.netlify.dev_ali_hassan.hafizalquran.R
 import app.netlify.dev_ali_hassan.hafizalquran.data.Surah
 import app.netlify.dev_ali_hassan.hafizalquran.databinding.SurahListItemBinding
 
-class AllSurahsAdapter(val context: Context) :
+class AllSurahsAdapter(val context: Context, val listener: OnSurahSelected) :
     ListAdapter<Surah, AllSurahsAdapter.SurahViewHolder>(SurahDiffUtil()) {
 
+    interface OnSurahSelected {
+        fun onSurahSelected(selectedSurah: Surah)
+    }
     inner class SurahViewHolder(private val binding: SurahListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        init {
+            // set a listener when the user select a specific Surah.
+            binding.root.setOnClickListener {
+                listener.onSurahSelected(getItem(adapterPosition))
+            }
+        }
         fun bind(surah: Surah) {
 
             binding.apply {
