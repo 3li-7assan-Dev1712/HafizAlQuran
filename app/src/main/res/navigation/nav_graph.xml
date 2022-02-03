@@ -9,5 +9,14 @@
         android:id="@+id/allSurahsFragment"
         android:name="app.netlify.dev_ali_hassan.hafizalquran.ui.allsurahs.AllSurahsFragment"
         android:label="@string/al_suar"
-        tools:layout="@layout/all_surahs_fragment" />
+        tools:layout="@layout/all_surahs_fragment" >
+        <action
+            android:id="@+id/action_allSurahsFragment_to_singleSurahFragment"
+            app:destination="@id/singleSurahFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/singleSurahFragment"
+        android:name="app.netlify.dev_ali_hassan.hafizalquran.ui.singlesurah.SingleSurahFragment"
+        android:label="single_surah_fragment"
+        tools:layout="@layout/single_surah_fragment" />
 </navigation>
