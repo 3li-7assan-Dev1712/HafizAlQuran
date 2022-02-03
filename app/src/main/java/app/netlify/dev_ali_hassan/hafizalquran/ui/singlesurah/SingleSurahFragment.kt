@@ -9,4 +9,5 @@ import app.netlify.dev_ali_hassan.hafizalquran.R
 * */
 class SingleSurahFragment : Fragment(R.layout.single_surah_fragment) {
 
+
 }
