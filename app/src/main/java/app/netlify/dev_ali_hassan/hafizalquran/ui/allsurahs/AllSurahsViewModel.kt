@@ -3,7 +3,7 @@ package app.netlify.dev_ali_hassan.hafizalquran.ui.allsurahs
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import app.netlify.dev_ali_hassan.hafizalquran.data.Surah
+import app.netlify.dev_ali_hassan.hafizalquran.data.models.Surah
 import app.netlify.dev_ali_hassan.hafizalquran.data.SurahsDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel

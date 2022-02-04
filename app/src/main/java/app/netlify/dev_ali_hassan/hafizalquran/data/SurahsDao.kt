@@ -3,6 +3,7 @@ package app.netlify.dev_ali_hassan.hafizalquran.data
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Update
+import app.netlify.dev_ali_hassan.hafizalquran.data.models.Surah
 import kotlinx.coroutines.flow.Flow
 
 /**

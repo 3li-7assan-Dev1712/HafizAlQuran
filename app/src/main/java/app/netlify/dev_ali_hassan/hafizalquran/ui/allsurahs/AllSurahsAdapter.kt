@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import app.netlify.dev_ali_hassan.hafizalquran.R
-import app.netlify.dev_ali_hassan.hafizalquran.data.Surah
+import app.netlify.dev_ali_hassan.hafizalquran.data.models.Surah
 import app.netlify.dev_ali_hassan.hafizalquran.databinding.SurahListItemBinding
 
 class AllSurahsAdapter(val context: Context, val listener: OnSurahSelected) :

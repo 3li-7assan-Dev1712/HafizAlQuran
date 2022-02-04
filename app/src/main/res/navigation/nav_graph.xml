@@ -17,6 +17,10 @@
     <fragment
         android:id="@+id/singleSurahFragment"
         android:name="app.netlify.dev_ali_hassan.hafizalquran.ui.singlesurah.SingleSurahFragment"
-        android:label="single_surah_fragment"
-        tools:layout="@layout/single_surah_fragment" />
+        android:label="{selectedSurah.surahName}"
+        tools:layout="@layout/single_surah_fragment" >
+        <argument
+            android:name="selectedSurah"
+            app:argType="app.netlify.dev_ali_hassan.hafizalquran.data.Surah" />
+    </fragment>
 </navigation>
