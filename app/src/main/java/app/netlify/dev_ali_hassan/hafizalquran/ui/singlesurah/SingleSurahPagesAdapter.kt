@@ -16,7 +16,7 @@ class SingleSurahPagesAdapter(
     val context: Context,
     val listener: OnPageIsClick
 ) :
-    ListAdapter<Page, SingleSurahPagesAdapter.PageViewHolder>(SurahDiffUtil()) {
+    ListAdapter<Page, SingleSurahPagesAdapter.PageViewHolder>(PageDiffUtil()) {
 
     interface OnPageIsClick {
         fun onClickPage(clickedPage: Page)
@@ -44,7 +44,7 @@ class SingleSurahPagesAdapter(
     /*
     * SurahDiffUtil class will be used to find the differences when updating the suah in the
     * database to notify the adapter and then update it in the UI*/
-    class SurahDiffUtil : DiffUtil.ItemCallback<Page>() {
+    class PageDiffUtil : DiffUtil.ItemCallback<Page>() {
         override fun areItemsTheSame(oldItem: Page, newItem: Page): Boolean =
             oldItem.pageNumber == newItem.pageNumber
 

@@ -2,6 +2,7 @@ package app.netlify.dev_ali_hassan.hafizalquran.ui.allsurahs
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -40,7 +41,8 @@ class AllSurahsFragment : Fragment(R.layout.all_surahs_fragment), AllSurahsAdapt
                 when (event) {
                     is AllSurahsViewModel.SurahsEvents.NavigateToSingleSurahFragment -> {
                         // navigate to the SingleSurahFragment
-                        findNavController().navigate(R.id.action_allSurahsFragment_to_singleSurahFragment)
+                        val bundle = bundleOf("selectedSurah" to event.surah, "name" to event.surah.surahName)
+                        findNavController().navigate(R.id.action_allSurahsFragment_to_singleSurahFragment, bundle)
                     }
                 }
             }
