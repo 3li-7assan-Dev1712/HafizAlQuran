@@ -26,4 +26,8 @@ class AppModule {
     @Provides
     fun provideSurahDao(surahDatabase: SurahDatabase) =
         surahDatabase.surahDao()
+
+    @Provides
+    fun providePageDao(surahDatabase: SurahDatabase) =
+        surahDatabase.pageDao()
 }

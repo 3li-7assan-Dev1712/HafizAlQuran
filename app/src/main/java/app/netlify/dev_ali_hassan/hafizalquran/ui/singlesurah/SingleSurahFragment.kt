@@ -5,11 +5,13 @@ import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import app.netlify.dev_ali_hassan.hafizalquran.R
 import app.netlify.dev_ali_hassan.hafizalquran.data.models.Page
 import app.netlify.dev_ali_hassan.hafizalquran.data.models.Surah
 import app.netlify.dev_ali_hassan.hafizalquran.databinding.SingleSurahFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 
 /*
 * The Fragment will show a single surah pages, it is opened when the user
@@ -35,9 +37,12 @@ class SingleSurahFragment : Fragment(R.layout.single_surah_fragment),
         val pagesAdapter = SingleSurahPagesAdapter(currentSelectedSurah, requireContext(), this)
         binding.apply {
             pagesRecyclerForSingleSurah.adapter = pagesAdapter
-            pagesAdapter.submitList(pagesViewModel.provideFakeData())
         }
-
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            pagesViewModel.getPagesOfSurahWithId(currentSelectedSurah.id).collect {
+                pagesAdapter.submitList(it)
+            }
+        }
     }
 
     override fun onClickPage(clickedPage: Page) {

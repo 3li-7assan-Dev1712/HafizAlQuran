@@ -53,7 +53,7 @@ class SingleSurahPagesAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PageViewHolder {
-        val binding = PageListItemBinding.inflate(LayoutInflater.from(parent.context))
+        val binding = PageListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return PageViewHolder(binding)
     }
 
