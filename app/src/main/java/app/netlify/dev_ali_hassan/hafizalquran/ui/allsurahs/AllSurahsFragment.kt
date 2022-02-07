@@ -1,6 +1,7 @@
 package app.netlify.dev_ali_hassan.hafizalquran.ui.allsurahs
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.collect
  * This fragment will be responsible for displaying all Surahs in Quran.
  * All the work (business logic will be delegated to a dedicated view model).
  */
+const val TAG = "AllSurahsFragment"
 @AndroidEntryPoint
 class AllSurahsFragment : Fragment(R.layout.all_surahs_fragment), AllSurahsAdapter.OnSurahSelected {
 
@@ -32,6 +34,7 @@ class AllSurahsFragment : Fragment(R.layout.all_surahs_fragment), AllSurahsAdapt
         }
         surahsViewModel.surahsLiveData.observe(viewLifecycleOwner) {
             adapter.submitList(it)
+            Log.d(TAG, "onViewCreated: data count is ${it.size}")
         }
 
 
