@@ -13,18 +13,6 @@
         android:layout_height="150dp"
         tools:layout_width="match_parent">
 
-        <!-- This text view will display how many pages this Surah takes in Quran. -->
-        <TextView
-            android:id="@+id/pageCountTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/surahNameTextView"
-            app:layout_constraintStart_toStartOf="@+id/surahNameTextView"
-            app:layout_constraintTop_toBottomOf="@+id/surahNameTextView"
-            tools:text="59" />
 
         <!-- This text view indicate to the number of the Surah in Quran
         exg. 1 (the first Surah in Quran), 2 (the second Surah in Quran) etc...-->
@@ -54,7 +42,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/pageCountTextView"
+            app:layout_constraintTop_toBottomOf="@id/surahNameTextView"
             tools:src="@drawable/madania_img" />
 
         <!-- This text view will show the name of the Surah-->

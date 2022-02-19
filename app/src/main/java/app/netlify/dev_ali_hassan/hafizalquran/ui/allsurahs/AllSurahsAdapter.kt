@@ -30,8 +30,6 @@ class AllSurahsAdapter(val context: Context, val listener: OnSurahSelected) :
             binding.apply {
                 surahNumberTextView.text = surah.id.toString()
                 surahNameTextView.text = surah.surahName
-                pageCountTextView.text = surah.surahPagesCount.toString()
-
                 if (surah.isSurahMakia) {
                     makiaMadaniaImageViewIndicator.setImageDrawable(
                         ResourcesCompat.getDrawable(

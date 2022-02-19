@@ -32,7 +32,7 @@ class SingleSurahFragment : Fragment(R.layout.single_surah_fragment),
         super.onViewCreated(view, savedInstanceState)
         binding = SingleSurahFragmentBinding.bind(view)
         val currentSelectedSurah: Surah = (arguments?.get("selectedSurah") ?:
-        Surah(surahName = "سورة البقرة", surahPagesCount = 48, surahState = 2, isSurahMakia = true )) as Surah
+        Surah(surahName = "سورة البقرة", surahState = 2, isSurahMakia = true )) as Surah
 
         val pagesAdapter = SingleSurahPagesAdapter(currentSelectedSurah, requireContext(), this)
         binding.apply {
