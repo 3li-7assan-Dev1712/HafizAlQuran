@@ -9,10 +9,10 @@ import kotlinx.android.parcel.Parcelize
 /*Pojo class of the Surah.*/
 @Entity(tableName = "suar")
 @Parcelize
-data class Surah (
+data class Surah(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val surahName: String,
     val isSurahMakia: Boolean,
     val surahPagesCount: Int,
     val surahState: Int = 1
-    ) : Parcelable
+) : Parcelable

@@ -10,5 +10,4 @@ data class Page(
     val pageIsMemorized: Boolean,
     @PrimaryKey(autoGenerate = true) val id: Int = 1
 
-) {
-}
+)
