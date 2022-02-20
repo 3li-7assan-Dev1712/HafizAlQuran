@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/allSurahsFragment">
+    app:startDestination="@id/memorizePageFragment">
 
     <fragment
         android:id="@+id/allSurahsFragment"
@@ -23,4 +23,8 @@
             android:name="selectedSurah"
             app:argType="app.netlify.dev_ali_hassan.hafizalquran.data.models.Surah" />
     </fragment>
+    <fragment
+        android:id="@+id/memorizePageFragment"
+        android:name="app.netlify.dev_ali_hassan.hafizalquran.ui.memorizepage.MemorizePageFragment"
+        android:label="MemorizePageFragment" />
 </navigation>
