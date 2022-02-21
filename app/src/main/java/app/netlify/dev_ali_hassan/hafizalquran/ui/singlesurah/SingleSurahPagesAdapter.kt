@@ -37,6 +37,7 @@ class SingleSurahPagesAdapter(
                 pageSurahName.text = selectedSurah.surahName
                 pageSurahNumber.text = page.pageNumber.toString()
                 lockImageView.isVisible = !page.pageIsMemorized
+                downloadStateImageView.isVisible = !page.isDownloaded
             }
         }
     }

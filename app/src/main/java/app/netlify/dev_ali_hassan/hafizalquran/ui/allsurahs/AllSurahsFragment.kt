@@ -8,9 +8,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import app.netlify.dev_ali_hassan.hafizalquran.R
 import app.netlify.dev_ali_hassan.hafizalquran.data.models.Surah
 import app.netlify.dev_ali_hassan.hafizalquran.databinding.AllSurahsFragmentBinding
@@ -52,28 +54,14 @@ class AllSurahsFragment : Fragment(R.layout.all_surahs_fragment), AllSurahsAdapt
                 when (event) {
                     is AllSurahsViewModel.SurahsEvents.NavigateToSingleSurahFragment -> {
                         // navigate to the SingleSurahFragment
-                        MediaUtil.createTestFile(requireContext())
-                        Log.d(
-                            TAG,
-                            "onViewCreated: the current number of files now is: ${
-                                MediaUtil.getFileList(requireContext())
-                            }"
-                        )
-                        Toast.makeText(
-                            requireContext(),
-                            "number of files in is ${MediaUtil.getFileList(requireContext())}",
-                            Toast.LENGTH_LONG
-                        ).show()
-//                        store("almaidah0")
-                        playMedia()
-                        /*val bundle = bundleOf(
+                        val bundle = bundleOf(
                             "selectedSurah" to event.surah,
                             "name" to event.surah.surahName
                         )
                         findNavController().navigate(
                             R.id.action_allSurahsFragment_to_singleSurahFragment,
                             bundle
-                        )*/
+                        )
                     }
                 }
             }

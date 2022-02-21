@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/memorizePageFragment">
+    app:startDestination="@id/allSurahsFragment">
 
     <fragment
         android:id="@+id/allSurahsFragment"
@@ -22,9 +22,20 @@
         <argument
             android:name="selectedSurah"
             app:argType="app.netlify.dev_ali_hassan.hafizalquran.data.models.Surah" />
+        <action
+            android:id="@+id/action_singleSurahFragment_to_memorizePageFragment"
+            app:destination="@id/memorizePageFragment" />
     </fragment>
     <fragment
         android:id="@+id/memorizePageFragment"
         android:name="app.netlify.dev_ali_hassan.hafizalquran.ui.memorizepage.MemorizePageFragment"
-        android:label="MemorizePageFragment" />
+        android:label="{pageNumber}"
+        tools:layout="@layout/memorize_page_fragment" >
+        <argument
+            android:name="choosedPage"
+            app:argType="app.netlify.dev_ali_hassan.hafizalquran.data.models.Page" />
+        <argument
+            android:name="surahName"
+            app:argType="string" />
+    </fragment>
 </navigation>
