@@ -1,5 +1,6 @@
 package app.netlify.dev_ali_hassan.hafizalquran.ui.singlesurah
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.netlify.dev_ali_hassan.hafizalquran.data.daos.PageDao
@@ -18,6 +19,7 @@ class SingleSurahViewModel @Inject constructor(
     private val pageDao: PageDao
 ) : ViewModel() {
 
+    val TAG = "SingleSurahViewModel"
 
     val eventChannel = Channel<SingleSurahEvents>()
     val eventsFlow = eventChannel.receiveAsFlow()
@@ -39,16 +41,17 @@ class SingleSurahViewModel @Inject constructor(
         )
 
 
-    fun userClickedPage(clickedPage: Page) {
+    fun userClickedPage(clickedPage: Page, position: Int) {
+        Log.d(TAG, "userClickedPage: giving the fragment the order of navigating to that screen")
         val surahName = getNameOfSurahByIndex(clickedPage.surahIdPageIn)
         viewModelScope.launch {
-            eventChannel.send(SingleSurahEvents.UserChoosePage(clickedPage, surahName))
+            eventChannel.send(SingleSurahEvents.UserChoosePage(clickedPage, surahName, position))
         }
     }
 
 
     sealed class SingleSurahEvents {
-        data class UserChoosePage(val choosedPage: Page, val surahName: String) :
+        data class UserChoosePage(val choosedPage: Page, val surahName: String, val position: Int) :
             SingleSurahEvents()
     }
 

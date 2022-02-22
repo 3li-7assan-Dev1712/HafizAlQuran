@@ -1,6 +1,7 @@
 package app.netlify.dev_ali_hassan.hafizalquran.ui.singlesurah
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.os.bundleOf
@@ -14,15 +15,17 @@ import app.netlify.dev_ali_hassan.hafizalquran.data.models.Surah
 import app.netlify.dev_ali_hassan.hafizalquran.databinding.SingleSurahFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 /*
 * The Fragment will show a single surah pages, it is opened when the user
-* select a surah they want to save, revision.
+* selects a surah they want to save, revision.
 * */
 @AndroidEntryPoint
 class SingleSurahFragment : Fragment(R.layout.single_surah_fragment),
     SingleSurahPagesAdapter.OnPageIsClick {
 
+    private val TAG = "SingleSurahFragment"
 
     private val pagesViewModel: SingleSurahViewModel by viewModels()
 
@@ -49,10 +52,14 @@ class SingleSurahFragment : Fragment(R.layout.single_surah_fragment),
             pagesViewModel.getPagesOfSurahWithId(currentSelectedSurah.id).collect {
                 pagesAdapter.submitList(it)
             }
+
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
             pagesViewModel.eventsFlow.collect { event ->
                 when (event) {
                     is SingleSurahViewModel.SingleSurahEvents.UserChoosePage -> {
-                        navigateToMemorizePageFragment(event.choosedPage, event.surahName)
+                        Log.d(TAG, "onViewCreated: when is working")
+                        navigateToMemorizePageFragment(event.choosedPage, event.surahName, event.position)
                     }
                 }
             }
@@ -60,19 +67,22 @@ class SingleSurahFragment : Fragment(R.layout.single_surah_fragment),
     }
 
 
-    private fun navigateToMemorizePageFragment(page: Page, name: String) {
-        val data = bundleOf("choosedPage" to page, "surahName" to name)
+    private fun navigateToMemorizePageFragment(page: Page, name: String, position: Int) {
+        Log.d("TAG", "navigateToMemorizePageFragment: should navigate to that fragment")
+        val data = bundleOf("choosedPage" to page, "surahName" to name, "position" to position)
         findNavController().navigate(R.id.action_singleSurahFragment_to_memorizePageFragment, data)
     }
 
-    override fun onClickPage(clickedPage: Page) {
+    override fun onClickPage(clickedPage: Page, position: Int) {
         Toast.makeText(
             requireContext(),
             "Ok you clicked page number ${clickedPage.pageNumber}",
             Toast.LENGTH_SHORT
         )
             .show()
-        pagesViewModel.userClickedPage(clickedPage)
+        Log.d(TAG, "onClickPage: going to call the method")
+        pagesViewModel.userClickedPage(clickedPage, position)
+        Log.d(TAG, "onClickPage: called  the method done")
     }
 
 }

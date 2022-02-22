@@ -2,4 +2,6 @@
     <string name="app_name">HafizAlQuran</string>
     <string name="makiaMedaniaDescription" translatable="false">Surah can be either makia or medania and this image view display an image that indicate whether the surah is makia or medania.</string>
     <string name="al_suar">Al Suar</string>
+    <string name="audio_not_downloaded_msg">\"Audio is not downloaded, do you want to download it?</string>
+    <string name="ok">OK</string>
 </resources>

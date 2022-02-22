@@ -19,7 +19,7 @@ class SingleSurahPagesAdapter(
     ListAdapter<Page, SingleSurahPagesAdapter.PageViewHolder>(PageDiffUtil()) {
 
     interface OnPageIsClick {
-        fun onClickPage(clickedPage: Page)
+        fun onClickPage(clickedPage: Page, position: Int)
     }
 
     inner class PageViewHolder(private val binding: PageListItemBinding) :
@@ -27,7 +27,7 @@ class SingleSurahPagesAdapter(
         init {
             // set a listener when the user select a specific Surah.
             binding.root.setOnClickListener {
-                listener.onClickPage(getItem(adapterPosition))
+                listener.onClickPage(getItem(adapterPosition), adapterPosition)
             }
         }
 

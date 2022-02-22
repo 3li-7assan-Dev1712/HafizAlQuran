@@ -4,13 +4,18 @@ import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.netlify.dev_ali_hassan.hafizalquran.data.daos.PageDao
+import app.netlify.dev_ali_hassan.hafizalquran.data.models.Page
 import com.google.firebase.storage.FirebaseStorage
+//import dagger.assisted.Assisted
+//import androidx.hilt.Assisted
+
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.io.File
@@ -20,8 +25,10 @@ import javax.inject.Inject
 const val MAX_SIZE_OF_AUDIO: Long = 1024 * 1024 * 10 //10MB
 
 @HiltViewModel
-class MemorizePageViewModel @Inject constructor (
-    @ApplicationContext val context: Context
+class MemorizePageViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
+    val pageDao: PageDao,
+    stateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val eventsChannel = Channel<MemorizePageEvents>()
@@ -30,6 +37,11 @@ class MemorizePageViewModel @Inject constructor (
     private val storage = FirebaseStorage.getInstance()
 
     private val TAG = "MemorizePageViewModel"
+
+    private val selectedPage = stateHandle.get<Page>("choosedPage")
+    private val surahName = stateHandle.get<String>("surahName")
+    private val pagePosition = stateHandle.get<Int>("position")
+
 
     fun downloadAudioFileFromStorage(audioName: String) {
 
@@ -42,15 +54,31 @@ class MemorizePageViewModel @Inject constructor (
         }.addOnFailureListener {
             it.printStackTrace()
             Log.d(TAG, "downloadAudioFileFromStorage: exception with message ${it.message}")
+            // show error to the user
+            showAudioIsNotAvailableMsg()
+
         }.addOnCompleteListener {
             showAudioDownloadedSuccessfullyMessage()
         }
 
     }
 
+    private fun showAudioIsNotAvailableMsg() {
+        viewModelScope.launch {
+            eventsChannel.send(MemorizePageEvents.AudioIsNotAvailable)
+        }
+    }
+
     private fun showAudioDownloadedSuccessfullyMessage() {
+        val updatedPage = selectedPage?.copy(isDownloaded = true)
         viewModelScope.launch {
             eventsChannel.send(MemorizePageEvents.AudioDownloadCompleted)
+
+            // update the page in the database
+            updatedPage?.also {
+                pageDao.updatePage(it)
+            }
+
         }
     }
 
@@ -85,9 +113,40 @@ class MemorizePageViewModel @Inject constructor (
 
     }
 
-    fun playMedia(fileName: String) {
+    fun userClickedPlayBtn() {
+        if (selectedPage != null) {
+            if (selectedPage.isDownloaded) {
+                playMedia()
+            } else {
+                showConfirmationDownloadMessage()
+            }
+        } else {
+            showErrorMessage()
+        }
+    }
 
-        val files = loadFileFromInternalStorage().filter { it.name == fileName }
+    private fun showErrorMessage() {
+        viewModelScope.launch {
+            eventsChannel.send(MemorizePageEvents.ErrorEvent)
+        }
+    }
+
+    private fun showConfirmationDownloadMessage() {
+        viewModelScope.launch {
+            eventsChannel.send(MemorizePageEvents.DownloadConfirmationEvent)
+        }
+    }
+
+    fun userConfirmDownloadOperation() {
+        if (surahName != null) {
+            downloadAudioFileFromStorage(surahName)
+        }
+
+    }
+
+    fun playMedia() {
+
+        val files = loadFileFromInternalStorage().filter { it.name == "${surahName}${pagePosition}"}
         if (files.isNotEmpty()) {
             val file = files[0]
             Log.d(
@@ -115,6 +174,9 @@ class MemorizePageViewModel @Inject constructor (
     }
 
     sealed class MemorizePageEvents {
-        object AudioDownloadCompleted: MemorizePageEvents()
+        object AudioDownloadCompleted : MemorizePageEvents()
+        object ErrorEvent : MemorizePageEvents()
+        object DownloadConfirmationEvent : MemorizePageEvents()
+        object AudioIsNotAvailable : MemorizePageEvents()
     }
 }
