@@ -14,12 +14,15 @@ import javax.inject.Singleton
 class AppModule {
 
     /*The function below will provide the database for the app with prepared data in it
-    * the database file is stored in the assests folder.*/
+    * the database file is stored in the assest folder.
+    *
+    * no need to use fallbackToDescriptiveMigration method because this method
+    * make room rewrite the data over and over again from the asset folder, and since we just
+    * need to use the prepopulate data from the asset folder only one time at the installation time.*/
     @Singleton
     @Provides
     fun provideSurahDatabase(app: Application) =
         Room.databaseBuilder(app, SurahDatabase::class.java, "surah_database")
-            .fallbackToDestructiveMigration()
             .createFromAsset("database/surah_database.db")
             .build()
 

@@ -52,9 +52,10 @@ class MemorizePageViewModel @Inject constructor(
 
         storage.getReference(location).getBytes(MAX_SIZE_OF_AUDIO).addOnSuccessListener {
             val result = storeFileInInternalStorage(it, location)
-            if (result)
+            if (result) {
                 Log.d(TAG, "downloadAudioFileFromStorage: saved file from storage successfully")
-            else
+                showAudioDownloadedSuccessfullyMessage()
+            } else
                 Log.w(TAG, "downloadAudioFileFromStorage: couldn't store file!")
         }.addOnFailureListener {
             it.printStackTrace()
@@ -62,8 +63,6 @@ class MemorizePageViewModel @Inject constructor(
             // show error to the user
             showAudioIsNotAvailableMsg()
 
-        }.addOnCompleteListener {
-            showAudioDownloadedSuccessfullyMessage()
         }
 
     }

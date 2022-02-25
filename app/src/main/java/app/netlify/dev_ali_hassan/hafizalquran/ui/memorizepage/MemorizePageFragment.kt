@@ -64,7 +64,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                         Snackbar.make(
                             view,
                             "Audio is not downloaded, want to download?",
-                            Snackbar.LENGTH_INDEFINITE
+                            Snackbar.LENGTH_LONG
                         ).setAction(R.string.ok) {
                             binding.downloadMediaProgressBar.visibility = View.VISIBLE
                             viewModel.userConfirmDownloadOperation()
