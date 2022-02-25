@@ -1,6 +1,7 @@
 package app.netlify.dev_ali_hassan.hafizalquran.ui.memorizepage
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.view.isVisible
@@ -20,6 +21,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
 
     private lateinit var binding: MemorizePageFragmentBinding
 
+    private val TAG = "MemorizePageFragment"
     private val viewModel: MemorizePageViewModel by viewModels()
 
 
@@ -28,8 +30,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
         binding = MemorizePageFragmentBinding.bind(view)
 
         val currentPage: Page = arguments?.getParcelable("choosedPage") ?: Page(-1, 0, false, false)
-        val surahName = arguments?.getString("surahName")
-        val pagePosition = arguments?.getInt("position")
+
 
         binding.downloadAudioBtn.isVisible = !currentPage.isDownloaded
 
@@ -41,10 +42,6 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
 
             }
             downloadAudioBtn.setOnClickListener {
-                val fileName = binding.mediaFileNameEditText.text.toString()
-                if (fileName.isEmpty()) {
-                    Toast.makeText(requireContext(), "please insert name", Toast.LENGTH_LONG).show()
-                }
                 binding.downloadMediaProgressBar.visibility = View.VISIBLE
                 viewModel.userConfirmDownloadOperation()
 
@@ -63,16 +60,15 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                     }
                     is MemorizePageViewModel.MemorizePageEvents.DownloadConfirmationEvent -> {
                         // show alert dialog to let the uer confirm downloading the audio
-                        context?.let {
-                            Snackbar.make(
-                                view,
-                                it.getString(R.string.audio_not_downloaded_msg),
-                                Snackbar.LENGTH_INDEFINITE
-                            ).setAction(R.string.ok) {
-                                binding.downloadMediaProgressBar.visibility = View.VISIBLE
-                                viewModel.userConfirmDownloadOperation()
-                            }
-                        }
+                        Log.d(TAG, "onViewCreated: should display download confirmation snackbar")
+                        Snackbar.make(
+                            view,
+                            "Audio is not downloaded, want to download?",
+                            Snackbar.LENGTH_INDEFINITE
+                        ).setAction(R.string.ok) {
+                            binding.downloadMediaProgressBar.visibility = View.VISIBLE
+                            viewModel.userConfirmDownloadOperation()
+                        }.show()
                     }
                     is MemorizePageViewModel.MemorizePageEvents.AudioIsNotAvailable -> {
                         // show a dialog to tell the user the Surah is not available in the server

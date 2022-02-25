@@ -56,7 +56,7 @@ class SingleSurahViewModel @Inject constructor(
     }
 
     fun getNameOfSurahByIndex(index: Int): String =
-        surahsNames[index]
+        surahsNames[index -1]
 
     val surahsNames = listOf("alfatiah", "albaqarah", "al-imran", "an-nisa", "almaidah", "al-anam")
 }

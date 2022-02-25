@@ -24,6 +24,8 @@ import javax.inject.Inject
 
 const val MAX_SIZE_OF_AUDIO: Long = 1024 * 1024 * 10 //10MB
 
+const val TAG = "MemorizePageViewModel"
+
 @HiltViewModel
 class MemorizePageViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -36,17 +38,20 @@ class MemorizePageViewModel @Inject constructor(
 
     private val storage = FirebaseStorage.getInstance()
 
-    private val TAG = "MemorizePageViewModel"
 
     private val selectedPage = stateHandle.get<Page>("choosedPage")
     private val surahName = stateHandle.get<String>("surahName")
     private val pagePosition = stateHandle.get<Int>("position")
 
+    private fun downloadAudioFileFromStorage(audioName: String) {
 
-    fun downloadAudioFileFromStorage(audioName: String) {
+        Log.d(TAG, "downloadAudioFileFromStorage: audio name is $audioName")
 
-        storage.getReference(audioName).getBytes(MAX_SIZE_OF_AUDIO).addOnSuccessListener {
-            val result = storeFileInInternalStorage(it, audioName)
+        val location = "$audioName$pagePosition.mp3"
+        Log.d(TAG, "the location where file is stored is $location")
+
+        storage.getReference(location).getBytes(MAX_SIZE_OF_AUDIO).addOnSuccessListener {
+            val result = storeFileInInternalStorage(it, location)
             if (result)
                 Log.d(TAG, "downloadAudioFileFromStorage: saved file from storage successfully")
             else
@@ -74,7 +79,6 @@ class MemorizePageViewModel @Inject constructor(
         viewModelScope.launch {
             eventsChannel.send(MemorizePageEvents.AudioDownloadCompleted)
 
-            // update the page in the database
             updatedPage?.also {
                 pageDao.updatePage(it)
             }
@@ -114,7 +118,12 @@ class MemorizePageViewModel @Inject constructor(
     }
 
     fun userClickedPlayBtn() {
+        Log.d(TAG, "userClickedPlayBtn: works")
         if (selectedPage != null) {
+            Log.d(
+                TAG,
+                "userClickedPlayBtn: pageNumber ${selectedPage.pageNumber} in surah number ${selectedPage.id}"
+            )
             if (selectedPage.isDownloaded) {
                 playMedia()
             } else {
@@ -122,6 +131,7 @@ class MemorizePageViewModel @Inject constructor(
             }
         } else {
             showErrorMessage()
+            Log.d(TAG, "userClickedPlayBtn: the selected page cannot be null")
         }
     }
 
@@ -132,6 +142,7 @@ class MemorizePageViewModel @Inject constructor(
     }
 
     private fun showConfirmationDownloadMessage() {
+        Log.d(TAG, "showConfirmationDownloadMessage: works")
         viewModelScope.launch {
             eventsChannel.send(MemorizePageEvents.DownloadConfirmationEvent)
         }
@@ -146,7 +157,8 @@ class MemorizePageViewModel @Inject constructor(
 
     fun playMedia() {
 
-        val files = loadFileFromInternalStorage().filter { it.name == "${surahName}${pagePosition}"}
+        val files =
+            loadFileFromInternalStorage().filter { it.name == "${surahName}${pagePosition}.mp3" }
         if (files.isNotEmpty()) {
             val file = files[0]
             Log.d(
