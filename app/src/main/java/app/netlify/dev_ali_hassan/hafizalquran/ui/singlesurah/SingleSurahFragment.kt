@@ -64,6 +64,7 @@ class SingleSurahFragment : Fragment(R.layout.single_surah_fragment),
                 }
             }
         }
+//        pagesViewModel.createMoveToFolder(currentSelectedSurah.surahName)
     }
 
 

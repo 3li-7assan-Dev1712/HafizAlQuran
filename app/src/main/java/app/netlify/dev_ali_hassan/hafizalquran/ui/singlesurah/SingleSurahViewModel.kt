@@ -19,9 +19,9 @@ class SingleSurahViewModel @Inject constructor(
     private val pageDao: PageDao
 ) : ViewModel() {
 
-    val TAG = "SingleSurahViewModel"
+    private val TAG = "SingleSurahViewModel"
 
-    val eventChannel = Channel<SingleSurahEvents>()
+    private val eventChannel = Channel<SingleSurahEvents>()
     val eventsFlow = eventChannel.receiveAsFlow()
 
     fun getPagesOfSurahWithId(surahId: Int): Flow<List<Page>> =
@@ -55,8 +55,12 @@ class SingleSurahViewModel @Inject constructor(
             SingleSurahEvents()
     }
 
-    fun getNameOfSurahByIndex(index: Int): String =
-        surahsNames[index -1]
 
-    val surahsNames = listOf("alfatiah", "albaqarah", "al-imran", "an-nisa", "almaidah", "al-anam")
-}
+
+        fun getNameOfSurahByIndex(index: Int): String =
+            surahsNames[index - 1]
+
+
+        val surahsNames =
+            listOf("alfatiah", "albaqarah", "al-imran", "an-nisa", "almaidah", "al-anam")
+    }

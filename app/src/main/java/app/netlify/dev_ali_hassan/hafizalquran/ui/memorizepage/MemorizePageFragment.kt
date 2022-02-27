@@ -39,7 +39,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                 viewModel.userClickedPlayBtn()
             }
             pauseAudioBtn.setOnClickListener {
-
+                viewModel.userClickedPauseBtn()
             }
             downloadAudioBtn.setOnClickListener {
                 binding.downloadMediaProgressBar.visibility = View.VISIBLE
@@ -52,6 +52,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                 when (events) {
                     is MemorizePageViewModel.MemorizePageEvents.AudioDownloadCompleted -> {
                         binding.downloadMediaProgressBar.visibility = View.INVISIBLE
+                        binding.downloadAudioBtn.visibility = View.INVISIBLE
                         Toast.makeText(
                             requireContext(),
                             "Audio downloaded successfully!",
