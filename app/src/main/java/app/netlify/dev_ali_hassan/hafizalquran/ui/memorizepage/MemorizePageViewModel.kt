@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.netlify.dev_ali_hassan.hafizalquran.api.dataclasses.Ayah
 import app.netlify.dev_ali_hassan.hafizalquran.api.dataclasses.QuranApiResponse
 import app.netlify.dev_ali_hassan.hafizalquran.data.daos.PageDao
 import app.netlify.dev_ali_hassan.hafizalquran.data.models.Page
@@ -43,8 +44,9 @@ class MemorizePageViewModel @Inject constructor(
     stateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    private var index = 0
     // page data
-    val pageData: MutableLiveData<Resource<QuranApiResponse>> = MutableLiveData()
+    val pageDataFromServer: MutableLiveData<Resource<QuranApiResponse>> = MutableLiveData()
 
     // this channel for making connection between the fragment and this view model
     private val eventsChannel = Channel<MemorizePageEvents>()
@@ -70,11 +72,11 @@ class MemorizePageViewModel @Inject constructor(
     // the player to be used to control the audio
     private lateinit var mPlayer: MediaPlayer
 
-    private fun getPageData() = viewModelScope.launch {
-        pageData.postValue(Resource.Loading())
+    fun getPageData() = viewModelScope.launch {
+        pageDataFromServer.postValue(Resource.Loading())
         if (selectedPage != null) {
             val response = quranRepository.getPageOfNumber(selectedPage.pageNumber)
-            pageData.postValue(handleQuranApiResponse(response))
+            pageDataFromServer.postValue(handleQuranApiResponse(response))
         } else
             Log.e(TAG, "selected page cannot be null")
     }
@@ -252,6 +254,18 @@ class MemorizePageViewModel @Inject constructor(
 
     fun userClickedPauseBtn() {
         mPlayer.pause()
+    }
+
+    fun receivedAyahsSuccessfully(ayahs: List<Ayah>) {
+        if (index == ayahs.size) return
+
+        Log.d(TAG, "receivedAyahsSuccessfully: the number of Ayahs in this page is ${ayahs.size}")
+        mPlayer = folderUtil.provideMediaPlayer(ayahs[index])
+        mPlayer.start()
+        mPlayer.setOnCompletionListener {
+            index++
+            receivedAyahsSuccessfully(ayahs)
+        }
     }
 
     /**

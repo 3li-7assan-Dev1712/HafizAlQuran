@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import app.netlify.dev_ali_hassan.hafizalquran.R
 import app.netlify.dev_ali_hassan.hafizalquran.data.models.Page
 import app.netlify.dev_ali_hassan.hafizalquran.databinding.MemorizePageFragmentBinding
+import app.netlify.dev_ali_hassan.hafizalquran.util.Resource
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -91,5 +92,42 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                 }
             }
         }
+
+        viewModel.getPageData()
+        viewModel.pageDataFromServer.observe(viewLifecycleOwner) { response ->
+            when (response) {
+                is Resource.Loading -> {
+                    showProgressBar()
+                    Toast.makeText(requireContext(), "Please wait some seconds", Toast.LENGTH_SHORT)
+                        .show()
+                }
+                is Resource.Success -> {
+                    hideProgressBar()
+                    response.data.let {
+                        viewModel.receivedAyahsSuccessfully(it.data.ayahs)
+                        Toast.makeText(
+                            requireContext(),
+                            "done, the number of ayahs is ${it.data.ayahs.size}",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+
+                }
+                is Error -> {
+                    hideProgressBar()
+                    Toast.makeText(requireContext(), "Error occured!", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
+    }
+
+    private fun hideProgressBar() {
+        binding.downloadMediaProgressBar.visibility = View.VISIBLE
+    }
+
+    private fun showProgressBar() {
+        binding.downloadMediaProgressBar.visibility = View.INVISIBLE
     }
 }
