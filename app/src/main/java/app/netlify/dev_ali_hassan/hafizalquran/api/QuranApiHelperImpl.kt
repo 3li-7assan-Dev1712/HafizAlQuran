@@ -7,6 +7,6 @@ import javax.inject.Inject
 class QuranApiHelperImpl @Inject constructor(
     private val quranApi: QuranApi
 ) : QuranApiHelper {
-    override suspend fun getPageByNumber(pageNumber: Long): Response<QuranApiResponse> =
+    override suspend fun getPageByNumber(pageNumber: Int): Response<QuranApiResponse> =
         quranApi.getPageByNumber(pageNumber)
 }

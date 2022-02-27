@@ -6,17 +6,22 @@ package app.netlify.dev_ali_hassan.hafizalquran.ui.memorizepage
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.netlify.dev_ali_hassan.hafizalquran.api.dataclasses.QuranApiResponse
 import app.netlify.dev_ali_hassan.hafizalquran.data.daos.PageDao
 import app.netlify.dev_ali_hassan.hafizalquran.data.models.Page
+import app.netlify.dev_ali_hassan.hafizalquran.repository.QuranRepository
 import app.netlify.dev_ali_hassan.hafizalquran.util.FolderUtil
+import app.netlify.dev_ali_hassan.hafizalquran.util.Resource
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import java.io.File
 import javax.inject.Inject
 
@@ -32,10 +37,14 @@ const val TAG = "MemorizePageViewModel"
  */
 @HiltViewModel
 class MemorizePageViewModel @Inject constructor(
+    val quranRepository: QuranRepository,
     var folderUtil: FolderUtil,
     val pageDao: PageDao,
     stateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    // page data
+    val pageData: MutableLiveData<Resource<QuranApiResponse>> = MutableLiveData()
 
     // this channel for making connection between the fragment and this view model
     private val eventsChannel = Channel<MemorizePageEvents>()
@@ -60,6 +69,25 @@ class MemorizePageViewModel @Inject constructor(
 
     // the player to be used to control the audio
     private lateinit var mPlayer: MediaPlayer
+
+    private fun getPageData() = viewModelScope.launch {
+        pageData.postValue(Resource.Loading())
+        if (selectedPage != null) {
+            val response = quranRepository.getPageOfNumber(selectedPage.pageNumber)
+            pageData.postValue(handleQuranApiResponse(response))
+        } else
+            Log.e(TAG, "selected page cannot be null")
+    }
+
+    private fun handleQuranApiResponse(response: Response<QuranApiResponse>): Resource<QuranApiResponse> {
+        if (response.isSuccessful) {
+            response.body()?.let { result ->
+                return Resource.Success(result)
+            }
+
+        }
+        return Resource.Error(message = response.message())
+    }
 
     /** this method is responsible for downloading the audio from the storage in firebase
      *

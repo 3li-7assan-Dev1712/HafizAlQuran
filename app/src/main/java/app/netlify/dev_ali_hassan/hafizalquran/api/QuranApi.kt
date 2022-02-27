@@ -12,7 +12,7 @@ interface QuranApi {
     // this method will get the response from the Quran server
     @GET("v1/page/{pageNumber}/ar.alafasy")
     suspend fun getPageByNumber(
-        @Path("pageNumber") pageNumber: Long
+        @Path("pageNumber") pageNumber: Int
     ): Response<QuranApiResponse>
 
 }

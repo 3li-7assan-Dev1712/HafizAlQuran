@@ -6,9 +6,9 @@ import javax.inject.Inject
 
 
 class QuranRepository @Inject constructor(
-    pageDao: PageDao,
-    quranApiHelper: QuranApiHelper
+    val pageDao: PageDao,
+    val quranApiHelper: QuranApiHelper
 ) {
-
-
+    suspend fun getPageOfNumber(pageNumber: Int) =
+        quranApiHelper.getPageByNumber(pageNumber)
 }
