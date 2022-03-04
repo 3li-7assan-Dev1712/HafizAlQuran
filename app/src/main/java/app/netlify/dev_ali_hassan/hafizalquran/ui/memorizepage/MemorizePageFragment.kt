@@ -43,7 +43,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                 viewModel.userClickedPauseBtn()
             }
             downloadAudioBtn.setOnClickListener {
-                binding.downloadMediaProgressBar.visibility = View.VISIBLE
+                showProgressBar()
                 viewModel.userConfirmDownloadOperation()
 
             }
@@ -52,7 +52,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
             viewModel.eventsFlow.collect { events ->
                 when (events) {
                     is MemorizePageViewModel.MemorizePageEvents.AudioDownloadCompleted -> {
-                        binding.downloadMediaProgressBar.visibility = View.INVISIBLE
+                        hideProgressBar()
                         binding.downloadAudioBtn.visibility = View.INVISIBLE
                         Toast.makeText(
                             requireContext(),
@@ -68,7 +68,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                             "Audio is not downloaded, want to download?",
                             Snackbar.LENGTH_LONG
                         ).setAction(R.string.ok) {
-                            binding.downloadMediaProgressBar.visibility = View.VISIBLE
+                            showProgressBar()
                             viewModel.userConfirmDownloadOperation()
                         }.show()
                     }
@@ -124,10 +124,10 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
     }
 
     private fun hideProgressBar() {
-        binding.downloadMediaProgressBar.visibility = View.VISIBLE
+        binding.downloadMediaProgressBar.visibility = View.INVISIBLE
     }
 
     private fun showProgressBar() {
-        binding.downloadMediaProgressBar.visibility = View.INVISIBLE
+        binding.downloadMediaProgressBar.visibility = View.VISIBLE
     }
 }

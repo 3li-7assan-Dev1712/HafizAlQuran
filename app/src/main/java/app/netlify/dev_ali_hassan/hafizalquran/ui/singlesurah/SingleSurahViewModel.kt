@@ -57,8 +57,13 @@ class SingleSurahViewModel @Inject constructor(
 
 
 
-        fun getNameOfSurahByIndex(index: Int): String =
-            surahsNames[index - 1]
+        fun getNameOfSurahByIndex(index: Int): String {
+
+            if (index <= surahsNames.size) {
+                return surahsNames[index - 1]
+            }
+            return surahsNames[0]
+        }
 
 
         val surahsNames =
