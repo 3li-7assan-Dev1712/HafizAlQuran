@@ -225,7 +225,7 @@ class MemorizePageViewModel @Inject constructor(
     private fun playMedia() {
 
         val files =
-            loadFileFromInternalStorage().filter { it.name == "${surahName}${pagePosition}.mp3" }
+            loadFileFromInternalStorage().filter { it.name == "${selectedPage?.pageNumber}.mp3" }
         if (files.isNotEmpty()) {
             val file = files[0]
             Log.d(
@@ -257,7 +257,8 @@ class MemorizePageViewModel @Inject constructor(
     }
 
     fun receivedAyahsSuccessfully(ayahs: List<Ayah>) {
-        if (index == ayahs.size) return
+        storeAyahsIntoOneFile(ayahs)
+        /*if (index == ayahs.size) return
 
         Log.d(TAG, "receivedAyahsSuccessfully: the number of Ayahs in this page is ${ayahs.size}")
         mPlayer = folderUtil.provideMediaPlayer(ayahs[index])
@@ -265,6 +266,14 @@ class MemorizePageViewModel @Inject constructor(
         mPlayer.setOnCompletionListener {
             index++
             receivedAyahsSuccessfully(ayahs)
+        }*/
+    }
+
+    fun storeAyahsIntoOneFile(ayahs: List<Ayah>) {
+        Log.d(TAG, "storeAyahsIntoOneFile: going to store the ayahs into one file...")
+        viewModelScope.launch {
+            folderUtil.downloadAyasIntoOnePage(ayahs)
+            playMedia()
         }
     }
 

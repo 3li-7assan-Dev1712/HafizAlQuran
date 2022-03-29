@@ -28,19 +28,6 @@ class SingleSurahViewModel @Inject constructor(
         pageDao.getSurahById(surahId)
 
 
-    fun provideFakeData() =
-        listOf(
-            Page(2, 2, true),
-            Page(2, 3, false),
-            Page(2, 4, false),
-            Page(2, 5, false),
-            Page(2, 6, false),
-            Page(2, 7, false),
-            Page(2, 8, false),
-            Page(2, 9, false)
-        )
-
-
     fun userClickedPage(clickedPage: Page, position: Int) {
         Log.d(TAG, "userClickedPage: giving the fragment the order of navigating to that screen")
         val surahName = getNameOfSurahByIndex(clickedPage.surahIdPageIn)
