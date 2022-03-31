@@ -47,15 +47,24 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
     private val TAG = "MemorizePageFragment"
     private val viewModel: MemorizePageViewModel by viewModels()
 
-    var currentPage: Page = arguments?.getParcelable("choosedPage") ?: Page(-1, 0, false, false)
+    private lateinit var currentPage: Page
 
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = MemorizePageFragmentBinding.bind(view)
+        currentPage = arguments?.getParcelable("choosedPage") ?: Page(-1, 0, false, false)
 
+        if (currentPage.isDownloaded) {
+            binding.downloadMediaProgressBar.visibility = View.INVISIBLE
+            binding.downloadAudioBtn.visibility = View.INVISIBLE
+        } else {
+            binding.downloadMediaProgressBar.visibility = View.VISIBLE
+            binding.downloadAudioBtn.visibility = View.VISIBLE
+        }
         Log.d(TAG, "onViewCreated: the page download status is ${currentPage.isDownloaded}")
+        Log.d(TAG, "onViewCreated: surahIdPageIn is ${currentPage.surahIdPageIn}")
         // check the permission
         when {
             ContextCompat.checkSelfPermission(
@@ -67,6 +76,8 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                     startDownloadMedia()
                 }
             }
+            // the problem is caused because of the argument in the fragment which we access it
+            // the arguments before even create the be
             shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE) -> {
                 // create an educational dialog fragment to tell why we need this permission
             }

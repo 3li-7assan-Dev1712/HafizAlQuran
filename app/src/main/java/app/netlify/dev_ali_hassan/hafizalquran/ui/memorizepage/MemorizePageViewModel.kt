@@ -61,6 +61,7 @@ class MemorizePageViewModel @Inject constructor(
     // the seelcted page from the SingleSurahFragment
     private var selectedPage = stateHandle.get<Page>("choosedPage")
 
+
     /* the surah name from which it is passed as argument when navigating to memorize page fragment
     and using the SavedStateHandle to get it, this will also help us when the process of our app
     is killed
