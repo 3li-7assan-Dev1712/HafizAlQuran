@@ -45,6 +45,7 @@ class MemorizePageViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var index = 0
+
     // page data
     val pageDataFromServer: MutableLiveData<Resource<QuranApiResponse>> = MutableLiveData()
 
@@ -58,7 +59,7 @@ class MemorizePageViewModel @Inject constructor(
     private val storage = FirebaseStorage.getInstance()
 
     // the seelcted page from the SingleSurahFragment
-    private val selectedPage = stateHandle.get<Page>("choosedPage")
+    private var selectedPage = stateHandle.get<Page>("choosedPage")
 
     /* the surah name from which it is passed as argument when navigating to memorize page fragment
     and using the SavedStateHandle to get it, this will also help us when the process of our app
@@ -75,7 +76,7 @@ class MemorizePageViewModel @Inject constructor(
     fun getPageData() = viewModelScope.launch {
         pageDataFromServer.postValue(Resource.Loading())
         if (selectedPage != null) {
-            val response = quranRepository.getPageOfNumber(selectedPage.pageNumber)
+            val response = quranRepository.getPageOfNumber(selectedPage!!.pageNumber)
             pageDataFromServer.postValue(handleQuranApiResponse(response))
         } else
             Log.e(TAG, "selected page cannot be null")
@@ -142,6 +143,7 @@ class MemorizePageViewModel @Inject constructor(
             }
 
         }
+        selectedPage = updatedPage
     }
 
     /**
@@ -175,13 +177,14 @@ class MemorizePageViewModel @Inject constructor(
      * after executing this business logic.
      */
     fun userClickedPlayBtn() {
+//        playMedia()
         Log.d(TAG, "userClickedPlayBtn: works")
         if (selectedPage != null) {
             Log.d(
                 TAG,
-                "userClickedPlayBtn: pageNumber ${selectedPage.pageNumber} in surah number ${selectedPage.id}"
+                "userClickedPlayBtn: pageNumber ${selectedPage!!.pageNumber} in surah number ${selectedPage!!.id}"
             )
-            if (selectedPage.isDownloaded) {
+            if (selectedPage!!.isDownloaded) {
                 playMedia()
             } else {
                 showConfirmationDownloadMessage()
@@ -214,7 +217,8 @@ class MemorizePageViewModel @Inject constructor(
 
     fun userConfirmDownloadOperation() {
         if (surahName != null) {
-            downloadAudioFileFromStorage(surahName)
+//            downloadAudioFileFromStorage(surahName)
+            getPageData()
         }
 
     }
@@ -271,10 +275,16 @@ class MemorizePageViewModel @Inject constructor(
 
     fun storeAyahsIntoOneFile(ayahs: List<Ayah>) {
         Log.d(TAG, "storeAyahsIntoOneFile: going to store the ayahs into one file...")
-        viewModelScope.launch {
-            folderUtil.downloadAyasIntoOnePage(ayahs)
+
+        val downloadSuccessful = folderUtil.downloadAyasIntoOnePage(ayahs)
+        if (downloadSuccessful) {
+            updatePageDownloadStateAndShowSuccessfulMsg()
             playMedia()
+        } else {
+            showErrorMessage()
         }
+
+
     }
 
     /**

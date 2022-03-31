@@ -1,9 +1,13 @@
 package app.netlify.dev_ali_hassan.hafizalquran.ui.memorizepage
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -19,18 +23,62 @@ import kotlinx.coroutines.flow.collect
 @AndroidEntryPoint
 class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
 
+    //  request permission
+    val requestMultiplePermissionsLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            permissions.entries.forEach {
+                /* if (it.value) {
+                     // continue with app flow
+                 } else {
+                     // tell the user we need this permission
+                 }  */
+            }
+
+            if (!currentPage.isDownloaded) {
+                startDownloadMedia()
+            }
+        }
+
 
     private lateinit var binding: MemorizePageFragmentBinding
 
     private val TAG = "MemorizePageFragment"
     private val viewModel: MemorizePageViewModel by viewModels()
 
+    var currentPage: Page = arguments?.getParcelable("choosedPage") ?: Page(-1, 0, false, false)
+
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = MemorizePageFragmentBinding.bind(view)
 
-        val currentPage: Page = arguments?.getParcelable("choosedPage") ?: Page(-1, 0, false, false)
+        Log.d(TAG, "onViewCreated: the page download status is ${currentPage.isDownloaded}")
+        // check the permission
+        when {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                // go ahead with app functionality
+                if (!currentPage.isDownloaded) {
+                    startDownloadMedia()
+                }
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE) -> {
+                // create an educational dialog fragment to tell why we need this permission
+            }
+            else -> {
+                requestMultiplePermissionsLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    )
+                )
+            }
+        }
 
 
         binding.downloadAudioBtn.isVisible = !currentPage.isDownloaded
@@ -59,6 +107,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                             "Audio downloaded successfully!",
                             Toast.LENGTH_SHORT
                         ).show()
+                        currentPage = currentPage.copy(isDownloaded = true)
                     }
                     is MemorizePageViewModel.MemorizePageEvents.DownloadConfirmationEvent -> {
                         // show alert dialog to let the uer confirm downloading the audio
@@ -93,7 +142,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
             }
         }
 
-        viewModel.getPageData()
+
         viewModel.pageDataFromServer.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is Resource.Loading -> {
@@ -122,6 +171,11 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
             }
         }
     }
+
+    private fun startDownloadMedia() {
+        viewModel.getPageData()
+    }
+
 
     private fun hideProgressBar() {
         binding.downloadMediaProgressBar.visibility = View.INVISIBLE
