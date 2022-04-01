@@ -24,29 +24,29 @@ import kotlinx.coroutines.flow.collect
 class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
 
     //  request permission
-    val requestMultiplePermissionsLauncher =
+    private val requestMultiplePermissionsLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
             permissions.entries.forEach {
-                /* if (it.value) {
-                     // continue with app flow
-                 } else {
-                     // tell the user we need this permission
-                 }  */
+                // make cause a problem, will be considered soon
             }
-
+            // download if the page is not already downloaded
             if (!currentPage.isDownloaded) {
                 startDownloadMedia()
             }
         }
 
-
+    // using view binding
     private lateinit var binding: MemorizePageFragmentBinding
 
+    //TAG for logging
     private val TAG = "MemorizePageFragment"
+
+    // the view model for this fragment to delegate all the business logic for it
     private val viewModel: MemorizePageViewModel by viewModels()
 
+    // current/selected page which the user wants to memorize/study
     private lateinit var currentPage: Page
 
 
@@ -55,15 +55,10 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
         binding = MemorizePageFragmentBinding.bind(view)
         currentPage = arguments?.getParcelable("choosedPage") ?: Page(-1, 0, false, false)
 
-        if (currentPage.isDownloaded) {
-            binding.downloadMediaProgressBar.visibility = View.INVISIBLE
-            binding.downloadAudioBtn.visibility = View.INVISIBLE
-        } else {
-            binding.downloadMediaProgressBar.visibility = View.VISIBLE
-            binding.downloadAudioBtn.visibility = View.VISIBLE
-        }
-        Log.d(TAG, "onViewCreated: the page download status is ${currentPage.isDownloaded}")
-        Log.d(TAG, "onViewCreated: surahIdPageIn is ${currentPage.surahIdPageIn}")
+
+        binding.downloadMediaProgressBar.isVisible = !currentPage.isDownloaded
+        binding.downloadAudioBtn.isVisible = !currentPage.isDownloaded
+
         // check the permission
         when {
             ContextCompat.checkSelfPermission(
@@ -75,8 +70,6 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                     startDownloadMedia()
                 }
             }
-            // the problem is caused because of the argument in the fragment which we access it
-            // the arguments before even create the be
             shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE) -> {
                 // create an educational dialog fragment to tell why we need this permission
             }
@@ -90,9 +83,6 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
             }
         }
 
-
-        binding.downloadAudioBtn.isVisible = !currentPage.isDownloaded
-
         binding.apply {
             playAudioBtn.setOnClickListener {
                 viewModel.userClickedPlayBtn()
@@ -103,14 +93,66 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
             downloadAudioBtn.setOnClickListener {
                 showProgressBar()
                 viewModel.userConfirmDownloadOperation()
-
             }
         }
+
+        // collect all events (orders) come from the MemorizePageViewModel
+        collectEventsFromViewModel(view)
+        // observe the network response when the view model make a network call
+        observeNetworkResponseFromViewModel()
+        // collect the downloading progress to fill the determined progress bar on the screen.
+        collectProgressFromViewModel()
+    }
+
+    /**
+     * this function is responsible for listening to the network result that comes from @MemorizePageViewModel
+     * the result is a LifeData, so it's easy for the fragment to do such an operation by using
+     * viewLifecycleOwner
+     */
+    private fun observeNetworkResponseFromViewModel() {
+        viewModel.pageDataFromServer.observe(viewLifecycleOwner) { response ->
+            when (response) {
+                is Resource.Loading -> {
+                    showProgressBar()
+                    Toast.makeText(requireContext(), "Please wait some seconds", Toast.LENGTH_SHORT)
+                        .show()
+                }
+                is Resource.Success -> {
+                    response.data.let {
+                        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+                            viewModel.receivedAyahsSuccessfully(it.data.ayahs)
+                        }
+
+                        Toast.makeText(
+                            requireContext(),
+                            "done, the number of ayahs is ${it.data.ayahs.size}",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+
+                }
+                else -> {
+                    // this last condition means that there is an error
+                    Toast.makeText(requireContext(), "Error occurs!", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
+    }
+
+    /**
+     * This function will collect the orders from the view model, for example when the downloading is finished
+     * the view model sends an order to hide the progress bar and the download button.
+     * it will also show a SnackBar to inform the user about the achieved operation
+     *
+     * @param view: The view (screen) of the fragment to be used for displaying the SnackBar
+     */
+    private fun collectEventsFromViewModel(view: View) {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.eventsFlow.collect { events ->
                 when (events) {
                     is MemorizePageViewModel.MemorizePageEvents.AudioDownloadCompleted -> {
-                        hideProgressBar()
                         binding.downloadAudioBtn.visibility = View.INVISIBLE
                         Toast.makeText(
                             requireContext(),
@@ -151,41 +193,13 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                 }
             }
         }
-
-
-        viewModel.pageDataFromServer.observe(viewLifecycleOwner) { response ->
-            when (response) {
-                is Resource.Loading -> {
-                    showProgressBar()
-                    Toast.makeText(requireContext(), "Please wait some seconds", Toast.LENGTH_SHORT)
-                        .show()
-                }
-                is Resource.Success -> {
-                    hideProgressBar()
-                    response.data.let {
-                        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-                            viewModel.receivedAyahsSuccessfully(it.data.ayahs)
-                        }
-
-                        Toast.makeText(
-                            requireContext(),
-                            "done, the number of ayahs is ${it.data.ayahs.size}",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                    }
-
-                }
-                is Error -> {
-                    hideProgressBar()
-                    Toast.makeText(requireContext(), "Error occured!", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
-        }
-        collectProgressFromViewModel()
     }
 
+    /**
+     * This function will take the progress bar progress functionality, for example when the first 1 ayah
+     * is downloaded successfully it will set the progress to a specific  percentage and when the entire page
+     * is downloaded it will set the progress to 100% and then hide it.
+     */
     private fun collectProgressFromViewModel() {
         Log.d(TAG, "collectProgressFromViewModel: listen to flow")
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
@@ -200,21 +214,27 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                 viewModel.folderUtil.pageProgressFlow.collect { (pageProgress, remainingAyahs) ->
 
                     binding.pageProgressView.progress = pageProgress
+                    Log.d(
+                        TAG,
+                        "collectProgressFromViewModel: the remaining ayahs now is $remainingAyahs"
+                    )
                     if (remainingAyahs == 0) {
                         binding.pageProgressView.progress = 100
                         binding.downloadMediaProgressBar.visibility = View.INVISIBLE
                         binding.ayahsNumberToDownloadTextView.visibility = View.INVISIBLE
                     }
                     binding.ayahsNumberToDownloadTextView.text =
-//                        resources.getString(R.string.remaining_ayahs_indicator_msg, remainingAyahs.toString())
-                        "downloading $remainingAyahs ayahs..."
+                        resources.getString(
+                            R.string.remaining_ayahs_indicator_msg,
+                            remainingAyahs.toString()
+                        )
+//                        "downloading $remainingAyahs ayahs..."
                     Log.d(
                         TAG,
                         "collectProgressFromViewModel: the page progress is  $pageProgress%"
                     )
                 }
             }
-
 
 
         }
@@ -224,11 +244,6 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
         viewModel.getPageData()
     }
 
-
-    private fun hideProgressBar() {
-        /* binding.downloadMediaProgressBar.visibility = View.INVISIBLE
-         binding.pageProgressView.visibility = View.INVISIBLE*/
-    }
 
     private fun showProgressBar() {
         binding.downloadMediaProgressBar.visibility = View.VISIBLE
