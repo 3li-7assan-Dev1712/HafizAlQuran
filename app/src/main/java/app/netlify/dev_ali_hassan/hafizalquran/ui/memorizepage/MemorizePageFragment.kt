@@ -87,9 +87,6 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
             playAudioBtn.setOnClickListener {
                 viewModel.userClickedPlayBtn()
             }
-            pauseAudioBtn.setOnClickListener {
-                viewModel.userClickedPauseBtn()
-            }
             downloadAudioBtn.setOnClickListener {
                 showProgressBar()
                 viewModel.userConfirmDownloadOperation()
@@ -182,6 +179,9 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                         ).show()
                     }
 
+                    is MemorizePageViewModel.MemorizePageEvents.PlayPauseEvent -> {
+                        binding.playAudioBtn.text = events.playPauseMsg
+                    }
                     is MemorizePageViewModel.MemorizePageEvents.ErrorEvent -> {
                         Snackbar.make(
                             view,

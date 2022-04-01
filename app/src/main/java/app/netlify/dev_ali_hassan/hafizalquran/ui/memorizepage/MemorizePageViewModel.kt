@@ -17,7 +17,6 @@ import app.netlify.dev_ali_hassan.hafizalquran.data.models.Page
 import app.netlify.dev_ali_hassan.hafizalquran.repository.QuranRepository
 import app.netlify.dev_ali_hassan.hafizalquran.util.FolderUtil
 import app.netlify.dev_ali_hassan.hafizalquran.util.Resource
-import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -26,8 +25,6 @@ import retrofit2.Response
 import java.io.File
 import javax.inject.Inject
 
-// this constant value indicates the maximum size of audio file which is 10MB
-const val MAX_SIZE_OF_AUDIO: Long = 1024 * 1024 * 10 //10MB
 
 // the tag will be used to make logging for dibugging requirements
 const val TAG = "MemorizePageViewModel"
@@ -38,14 +35,15 @@ const val TAG = "MemorizePageViewModel"
  */
 @HiltViewModel
 class MemorizePageViewModel @Inject constructor(
-    val quranRepository: QuranRepository,
+    private val quranRepository: QuranRepository,
     var folderUtil: FolderUtil,
     val pageDao: PageDao,
     stateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private var index = 0
 
+    // pause indicator
+    private var mediaPlayerIsPaused = false
 
     // page data
     val pageDataFromServer: MutableLiveData<Resource<QuranApiResponse>> = MutableLiveData()
@@ -55,9 +53,6 @@ class MemorizePageViewModel @Inject constructor(
 
     // receive the channel as flow to collect it in the fragment
     val eventsFlow = eventsChannel.receiveAsFlow()
-
-    // the storage instance of firebase
-    private val storage = FirebaseStorage.getInstance()
 
     // the seelcted page from the SingleSurahFragment
     private var selectedPage = stateHandle.get<Page>("choosedPage")
@@ -69,11 +64,8 @@ class MemorizePageViewModel @Inject constructor(
      */
     private val surahName = stateHandle.get<String>("surahName")
 
-    // the position of the selected page passed as arguemnt as we also get it iwth state handle
-    private val pagePosition = stateHandle.get<Int>("position")
-
     // the player to be used to control the audio
-    private lateinit var mPlayer: MediaPlayer
+    private var mPlayer: MediaPlayer? = null
 
     fun getPageData() = viewModelScope.launch {
         pageDataFromServer.postValue(Resource.Loading())
@@ -94,42 +86,6 @@ class MemorizePageViewModel @Inject constructor(
         return Resource.Error(message = response.message())
     }
 
-    /** this method is responsible for downloading the audio from the storage in firebase
-     *
-     * @param audioName: the name of the audio to be used for download the audio.
-     */
-    private fun downloadAudioFileFromStorage(audioName: String) {
-
-        Log.d(TAG, "downloadAudioFileFromStorage: audio name is $audioName")
-
-        val location = "$audioName$pagePosition.mp3"
-        Log.d(TAG, "the location where file is stored is $location")
-
-        storage.getReference(location).getBytes(MAX_SIZE_OF_AUDIO).addOnSuccessListener {
-            val result = storeFileInInternalStorage(it, location)
-            if (result) {
-                Log.d(TAG, "downloadAudioFileFromStorage: saved file from storage successfully")
-                updatePageDownloadStateAndShowSuccessfulMsg()
-            } else
-                Log.w(TAG, "downloadAudioFileFromStorage: couldn't store file!")
-        }.addOnFailureListener {
-            it.printStackTrace()
-            Log.d(TAG, "downloadAudioFileFromStorage: exception with message ${it.message}")
-            // show error to the user
-            showAudioIsNotAvailableMsg()
-
-        }
-
-    }
-
-    /**
-     * when the audio is not in the server show a dialog to the user to infrom them
-     */
-    private fun showAudioIsNotAvailableMsg() {
-        viewModelScope.launch {
-            eventsChannel.send(MemorizePageEvents.AudioIsNotAvailable)
-        }
-    }
 
     /**
      * This method will update the state of the page in the database. make the isDownloaded
@@ -147,19 +103,6 @@ class MemorizePageViewModel @Inject constructor(
         }
         selectedPage = updatedPage
     }
-
-    /**
-     * This method will store the audio in the internal storage
-     * after download it from the firebase storage
-     *
-     * @param data: the byte array of the audio to store it in the internal storage
-     * @param audioFileName: the name of the file to use it as the same name in the internal
-     * storage
-     * @return a boolean type true if the audio is downloaded successfully otherwise false.
-     */
-
-    private fun storeFileInInternalStorage(data: ByteArray, audioFileName: String): Boolean =
-        folderUtil.storeAudioInInternalStorage(audioFileName, data = data)
 
 
     /**
@@ -179,7 +122,6 @@ class MemorizePageViewModel @Inject constructor(
      * after executing this business logic.
      */
     fun userClickedPlayBtn() {
-//        playMedia()
         Log.d(TAG, "userClickedPlayBtn: works")
         if (selectedPage != null) {
             Log.d(
@@ -230,14 +172,23 @@ class MemorizePageViewModel @Inject constructor(
      */
     private fun playMedia() {
 
+        if (mPlayer?.isPlaying == true) {
+            mPlayer!!.pause()
+            mediaPlayerIsPaused = true
+            sendPlayPauseEventBtn("play")
+            return
+
+        } else if (mediaPlayerIsPaused) {
+            mPlayer?.start()
+            mediaPlayerIsPaused = false
+            sendPlayPauseEventBtn("pause")
+            return
+        }
+
         val files =
             loadFileFromInternalStorage().filter { it.name == "${selectedPage?.pageNumber}.mp3" }
         if (files.isNotEmpty()) {
             val file = files[0]
-            Log.d(
-                app.netlify.dev_ali_hassan.hafizalquran.ui.allsurahs.TAG,
-                "playMedia: the name of the file is ${file.name}"
-            )
             mPlayer = MediaPlayer().apply {
                 setAudioAttributes(
                     AudioAttributes.Builder()
@@ -248,6 +199,7 @@ class MemorizePageViewModel @Inject constructor(
                 setDataSource(file.path)
                 prepare()
                 start()
+                sendPlayPauseEventBtn("pause")
             }
         } else {
             Log.d(
@@ -258,8 +210,15 @@ class MemorizePageViewModel @Inject constructor(
 
     }
 
+    private fun sendPlayPauseEventBtn(btnLabel: String) =
+        viewModelScope.launch {
+            eventsChannel.send(MemorizePageEvents.PlayPauseEvent(btnLabel))
+        }
+
     fun userClickedPauseBtn() {
-        mPlayer.pause()
+        /* mPlayer.pause()
+         mediaPlayerIsPaused = true
+         */
     }
 
     suspend fun receivedAyahsSuccessfully(ayahs: List<Ayah>) {
@@ -275,7 +234,7 @@ class MemorizePageViewModel @Inject constructor(
         }*/
     }
 
-    suspend fun storeAyahsIntoOneFile(ayahs: List<Ayah>) {
+    private suspend fun storeAyahsIntoOneFile(ayahs: List<Ayah>) {
         Log.d(TAG, "storeAyahsIntoOneFile: going to store the ayahs into one file...")
 
         val downloadSuccessful = folderUtil.downloadAyasIntoOnePage(ayahs)
@@ -293,6 +252,7 @@ class MemorizePageViewModel @Inject constructor(
      * This sealed class is used to express the events of the memorizing page functionality.
      */
     sealed class MemorizePageEvents {
+        data class PlayPauseEvent(val playPauseMsg: String) : MemorizePageEvents()
         object AudioDownloadCompleted : MemorizePageEvents()
         object ErrorEvent : MemorizePageEvents()
         object DownloadConfirmationEvent : MemorizePageEvents()

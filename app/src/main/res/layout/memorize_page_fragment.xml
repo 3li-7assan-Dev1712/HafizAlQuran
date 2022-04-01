@@ -17,7 +17,7 @@
         android:progress="50"
 
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@id/pauseAudioBtn"
+        app:layout_constraintBottom_toTopOf="@id/downloadAudioBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
@@ -53,24 +53,11 @@
         android:id="@+id/playAudioBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:text="Play"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <Button
-        android:id="@+id/pauseAudioBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="pause"
-        app:layout_constraintBottom_toBottomOf="@id/playAudioBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/playAudioBtn"
-
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <Button

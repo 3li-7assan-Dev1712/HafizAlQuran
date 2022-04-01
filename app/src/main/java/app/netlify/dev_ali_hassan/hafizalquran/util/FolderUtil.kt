@@ -68,25 +68,6 @@ class FolderUtil @Inject constructor(@ApplicationContext val context: Context) {
 
     }
 
-    fun provideMediaPlayer(ayah: Ayah): MediaPlayer {
-
-//        val uri = Uri.parse(ayah.audio)
-
-        val player = MediaPlayer().apply {
-            setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .build()
-            )
-            setDataSource(ayah.audio)
-            prepare()
-
-        }
-
-        return player
-    }
-
     suspend fun downloadAyasIntoOnePage(ayahs: List<Ayah>): Boolean {
         var counter = ayahs.size
         totalAyahs = ayahs.size
