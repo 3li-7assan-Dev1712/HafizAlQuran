@@ -6,11 +6,10 @@ import android.content.Context
 import android.content.Context.DOWNLOAD_SERVICE
 import android.content.Context.MODE_PRIVATE
 import android.database.Cursor
-import android.media.AudioAttributes
-import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import androidx.core.text.HtmlCompat
 import app.netlify.dev_ali_hassan.hafizalquran.api.dataclasses.Ayah
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -34,11 +33,14 @@ class FolderUtil @Inject constructor(@ApplicationContext val context: Context) {
     private var handredPart = 0
 
     val singleAyahProgressFlow = MutableStateFlow(0)
-    val pageProgressFlow = MutableStateFlow<Pair<Int, Int>>(Pair(0, 0))
+    val ayahsTexts = MutableStateFlow("")
+    val pageProgressFlow = MutableStateFlow(Pair(0, 0))
 
     private val TAG = "FolderUtil"
+    private var ayahsInString: String = ""
 
     fun storeAudioInInternalStorage(fileName: String, data: ByteArray): Boolean {
+
 
         return try {
             context.openFileOutput(
@@ -95,6 +97,11 @@ class FolderUtil @Inject constructor(@ApplicationContext val context: Context) {
         val ayahsList = mutableListOf<File>()
         val finalFile = File(folder, "${ayahs[0].page}.mp3")
         ayahs.forEach { ayah ->
+            // prepare ayahs as text
+            val ayahText = HtmlCompat.fromHtml(ayah.text, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            ayahsInString += ayahText
+            populateAyahText()
+            Log.d(TAG, "downloadAyasIntoOnePage: the ayah text is $ayahText")
             val audioUrl = ayah.audio
 
             val subFile = File(folder, "${ayah.surah.englishName}${ayah.number}.mp3")
@@ -124,6 +131,7 @@ class FolderUtil @Inject constructor(@ApplicationContext val context: Context) {
                     if (finishDownload) {
                         counter--
                         ayahsList.add(subFile)
+//                        populateAyahText()
                     }
                 }
                 cursor?.close()
@@ -171,7 +179,7 @@ class FolderUtil @Inject constructor(@ApplicationContext val context: Context) {
         publishProgress(progress)
         when (status) {
             DownloadManager.STATUS_FAILED -> {
-                return true
+                return false
             }
             DownloadManager.STATUS_RUNNING -> {
                 val totalIndex = cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES)
@@ -204,6 +212,13 @@ class FolderUtil @Inject constructor(@ApplicationContext val context: Context) {
         withContext(Dispatchers.IO) {
             Log.d(TAG, "publishProgress: from folder util class withContext method emits progress")
             singleAyahProgressFlow.emit(progress)
+        }
+    }
+
+    private suspend fun populateAyahText() {
+        Log.d(TAG, "populateAyahText: the page now is $ayahsInString")
+        withContext(Dispatchers.IO) {
+            ayahsTexts.emit(ayahsInString)
         }
     }
 

@@ -55,6 +55,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
         binding = MemorizePageFragmentBinding.bind(view)
         currentPage = arguments?.getParcelable("choosedPage") ?: Page(-1, 0, false, false)
 
+        if(savedInstanceState != null) return
 
         binding.downloadMediaProgressBar.isVisible = !currentPage.isDownloaded
         binding.downloadAudioBtn.isVisible = !currentPage.isDownloaded
@@ -234,9 +235,16 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                         "collectProgressFromViewModel: the page progress is  $pageProgress%"
                     )
                 }
+
             }
 
 
+        }
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.folderUtil.ayahsTexts.collect {
+                Log.d(TAG, "collectProgressFromViewModel: from fragment ayah text is $it")
+                binding.pageAyahsTextView.text = it
+            }
         }
     }
 

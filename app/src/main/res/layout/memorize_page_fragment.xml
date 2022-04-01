@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".ui.memorizepage.MemorizePageFragment">
 
+    <TextView
+        android:id="@+id/pageAyahsTextView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/ayahsNumberToDownloadTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pageProgressView"
+        tools:text="بسم الله الرحمن الرحيم" />
+
     <ProgressBar
         android:id="@+id/downloadMediaProgressBar"
         style="@style/Widget.AppCompat.ProgressBar"
@@ -13,13 +25,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:indeterminate="false"
-        android:progress="50"
 
+        android:progress="50"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@id/downloadAudioBtn"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
     <ProgressBar
@@ -44,30 +56,30 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="@id/downloadMediaProgressBar"
+        app:layout_constraintBottom_toTopOf="@id/playAudioBtn"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/downloadMediaProgressBar"
+
         tools:text="Downloading 5 ayahs..." />
 
     <Button
         android:id="@+id/playAudioBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
         android:text="Play"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 
     <Button
         android:id="@+id/downloadAudioBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:text="download"
         app:layout_constraintBottom_toBottomOf="@id/playAudioBtn"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/playAudioBtn" />
 
 
