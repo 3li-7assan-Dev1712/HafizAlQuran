@@ -59,7 +59,7 @@ class SingleSurahFragment : Fragment(R.layout.single_surah_fragment),
                 when (event) {
                     is SingleSurahViewModel.SingleSurahEvents.UserChoosePage -> {
                         Log.d(TAG, "onViewCreated: when is working")
-                        navigateToMemorizePageFragment(event.choosedPage, event.surahName, event.position)
+                        navigateToMemorizePageFragment(event.choosedPage)
                     }
                 }
             }
@@ -68,9 +68,9 @@ class SingleSurahFragment : Fragment(R.layout.single_surah_fragment),
     }
 
 
-    private fun navigateToMemorizePageFragment(page: Page, name: String, position: Int) {
+    private fun navigateToMemorizePageFragment(page: Page) {
         Log.d("TAG", "navigateToMemorizePageFragment: should navigate to that fragment")
-        val data = bundleOf("choosedPage" to page, "surahName" to name, "position" to position)
+        val data = bundleOf("choosedPage" to page, "pageNumber" to page.pageNumber)
         findNavController().navigate(R.id.action_singleSurahFragment_to_memorizePageFragment, data)
     }
 

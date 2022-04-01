@@ -29,16 +29,13 @@
     <fragment
         android:id="@+id/memorizePageFragment"
         android:name="app.netlify.dev_ali_hassan.hafizalquran.ui.memorizepage.MemorizePageFragment"
-        android:label="{position}"
+        android:label="صفحة رقم {pageNumber}"
         tools:layout="@layout/memorize_page_fragment" >
         <argument
             android:name="choosedPage"
             app:argType="app.netlify.dev_ali_hassan.hafizalquran.data.models.Page" />
         <argument
-            android:name="surahName"
-            app:argType="string" />
-        <argument
-            android:name="position"
+            android:name="pageNumber"
             app:argType="integer" />
     </fragment>
 </navigation>

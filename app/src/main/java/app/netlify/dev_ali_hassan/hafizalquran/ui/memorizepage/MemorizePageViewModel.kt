@@ -46,6 +46,7 @@ class MemorizePageViewModel @Inject constructor(
 
     private var index = 0
 
+
     // page data
     val pageDataFromServer: MutableLiveData<Resource<QuranApiResponse>> = MutableLiveData()
 
@@ -261,7 +262,7 @@ class MemorizePageViewModel @Inject constructor(
         mPlayer.pause()
     }
 
-    fun receivedAyahsSuccessfully(ayahs: List<Ayah>) {
+    suspend fun receivedAyahsSuccessfully(ayahs: List<Ayah>) {
         storeAyahsIntoOneFile(ayahs)
         /*if (index == ayahs.size) return
 
@@ -274,7 +275,7 @@ class MemorizePageViewModel @Inject constructor(
         }*/
     }
 
-    fun storeAyahsIntoOneFile(ayahs: List<Ayah>) {
+    suspend fun storeAyahsIntoOneFile(ayahs: List<Ayah>) {
         Log.d(TAG, "storeAyahsIntoOneFile: going to store the ayahs into one file...")
 
         val downloadSuccessful = folderUtil.downloadAyasIntoOnePage(ayahs)

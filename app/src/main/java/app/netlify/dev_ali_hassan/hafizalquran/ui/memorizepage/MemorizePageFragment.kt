@@ -50,7 +50,6 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
     private lateinit var currentPage: Page
 
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = MemorizePageFragmentBinding.bind(view)
@@ -164,7 +163,10 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                 is Resource.Success -> {
                     hideProgressBar()
                     response.data.let {
-                        viewModel.receivedAyahsSuccessfully(it.data.ayahs)
+                        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+                            viewModel.receivedAyahsSuccessfully(it.data.ayahs)
+                        }
+
                         Toast.makeText(
                             requireContext(),
                             "done, the number of ayahs is ${it.data.ayahs.size}",
@@ -181,6 +183,41 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                 }
             }
         }
+        collectProgressFromViewModel()
+    }
+
+    private fun collectProgressFromViewModel() {
+        Log.d(TAG, "collectProgressFromViewModel: listen to flow")
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+
+            viewModel.folderUtil.singleAyahProgressFlow.collect { ayahProgress ->
+                binding.downloadMediaProgressBar.progress = ayahProgress
+                Log.d(
+                    TAG,
+                    "collectProgressFromViewModel: the progress should set to be $ayahProgress%"
+                )
+
+                viewModel.folderUtil.pageProgressFlow.collect { (pageProgress, remainingAyahs) ->
+
+                    binding.pageProgressView.progress = pageProgress
+                    if (remainingAyahs == 0) {
+                        binding.pageProgressView.progress = 100
+                        binding.downloadMediaProgressBar.visibility = View.INVISIBLE
+                        binding.ayahsNumberToDownloadTextView.visibility = View.INVISIBLE
+                    }
+                    binding.ayahsNumberToDownloadTextView.text =
+//                        resources.getString(R.string.remaining_ayahs_indicator_msg, remainingAyahs.toString())
+                        "downloading $remainingAyahs ayahs..."
+                    Log.d(
+                        TAG,
+                        "collectProgressFromViewModel: the page progress is  $pageProgress%"
+                    )
+                }
+            }
+
+
+
+        }
     }
 
     private fun startDownloadMedia() {
@@ -189,7 +226,8 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
 
 
     private fun hideProgressBar() {
-        binding.downloadMediaProgressBar.visibility = View.INVISIBLE
+        /* binding.downloadMediaProgressBar.visibility = View.INVISIBLE
+         binding.pageProgressView.visibility = View.INVISIBLE*/
     }
 
     private fun showProgressBar() {

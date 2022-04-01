@@ -13,6 +13,9 @@ import android.os.Environment
 import android.util.Log
 import app.netlify.dev_ali_hassan.hafizalquran.api.dataclasses.Ayah
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -25,6 +28,13 @@ class FolderUtil @Inject constructor(@ApplicationContext val context: Context) {
     // TAG for logging and debugging and will be removed after finishing the debug version
     // then all
 
+
+    private var totalAyahs: Int = -1
+    private var totalProgress: Int = 0
+    private var handredPart = 0
+
+    val singleAyahProgressFlow = MutableStateFlow(0)
+    val pageProgressFlow = MutableStateFlow<Pair<Int, Int>>(Pair(0, 0))
 
     private val TAG = "FolderUtil"
 
@@ -77,8 +87,10 @@ class FolderUtil @Inject constructor(@ApplicationContext val context: Context) {
         return player
     }
 
-    fun downloadAyasIntoOnePage(ayahs: List<Ayah>): Boolean {
+    suspend fun downloadAyasIntoOnePage(ayahs: List<Ayah>): Boolean {
         var counter = ayahs.size
+        totalAyahs = ayahs.size
+        handredPart = 100 / ayahs.size
         val root =
             File(
                 "${context.applicationContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)}/.hafizalquran",
@@ -173,8 +185,9 @@ class FolderUtil @Inject constructor(@ApplicationContext val context: Context) {
 */
     }
 
-    private fun handleStatus(status: Int, cursor: Cursor): Boolean {
+    private suspend fun handleStatus(status: Int, cursor: Cursor): Boolean {
         var progress = 0
+        publishProgress(progress)
         when (status) {
             DownloadManager.STATUS_FAILED -> {
                 return true
@@ -188,18 +201,37 @@ class FolderUtil @Inject constructor(@ApplicationContext val context: Context) {
                     val downloaded = cursor.getLong(downloadIndex)
                     progress = ((downloaded * 100) / total).toInt()
                     Log.d(TAG, "handleStatus: the progress now is $progress%")
+                    publishProgress(progress)
+
                 }
 
             }
             DownloadManager.STATUS_SUCCESSFUL -> {
                 progress = 100
-
+                totalProgress += handredPart
+                publishProgress(progress)
+                publishTotalProgress(totalProgress)
                 Log.d(TAG, "handleStatus: download completed successfully")
                 return true
 
             }
         }
         return false
+    }
+
+    private suspend fun publishProgress(progress: Int) {
+        withContext(Dispatchers.IO) {
+            Log.d(TAG, "publishProgress: from folder util class withContext method emits progress")
+            singleAyahProgressFlow.emit(progress)
+        }
+    }
+
+    private suspend fun publishTotalProgress(totalProgress: Int) {
+        withContext(Dispatchers.IO) {
+            totalAyahs--
+            pageProgressFlow.emit(Pair(totalProgress, totalAyahs))
+            Log.d(TAG, "downloading $totalAyahs ayahs progress now is $totalProgress")
+        }
     }
 
     fun File.appendAll(bufferSize: Int = 512, fileList: List<File>) {

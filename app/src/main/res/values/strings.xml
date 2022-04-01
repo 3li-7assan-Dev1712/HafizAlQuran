@@ -4,4 +4,6 @@
     <string name="al_suar">Al Suar</string>
     <string name="audio_not_downloaded_msg">\"Audio is not downloaded, do you want to download it?</string>
     <string name="ok">OK</string>
+    <string name="memorize_fragment_title">Page Number %s</string>
+    <string name="remaining_ayahs_indicator_msg">Downloading %s ayahs…</string>
 </resources>
