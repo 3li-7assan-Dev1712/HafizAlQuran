@@ -55,7 +55,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
         binding = MemorizePageFragmentBinding.bind(view)
         currentPage = arguments?.getParcelable("choosedPage") ?: Page(-1, 0, false, false)
 
-        if(savedInstanceState != null) return
+        if (savedInstanceState != null) return
 
         binding.downloadMediaProgressBar.isVisible = !currentPage.isDownloaded
         binding.downloadAudioBtn.isVisible = !currentPage.isDownloaded
@@ -121,12 +121,12 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                             viewModel.receivedAyahsSuccessfully(it.data.ayahs)
                         }
 
-                        Toast.makeText(
+                        /*Toast.makeText(
                             requireContext(),
                             "done, the number of ayahs is ${it.data.ayahs.size}",
                             Toast.LENGTH_SHORT
                         )
-                            .show()
+                            .show()*/
                     }
 
                 }
@@ -152,6 +152,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                 when (events) {
                     is MemorizePageViewModel.MemorizePageEvents.AudioDownloadCompleted -> {
                         binding.downloadAudioBtn.visibility = View.INVISIBLE
+                        binding.ayahsNumberToDownloadTextView.visibility = View.INVISIBLE
                         Toast.makeText(
                             requireContext(),
                             "Audio downloaded successfully!",
@@ -211,36 +212,34 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
                     TAG,
                     "collectProgressFromViewModel: the progress should set to be $ayahProgress%"
                 )
-
-                viewModel.folderUtil.pageProgressFlow.collect { (pageProgress, remainingAyahs) ->
-
-                    binding.pageProgressView.progress = pageProgress
-                    Log.d(
-                        TAG,
-                        "collectProgressFromViewModel: the remaining ayahs now is $remainingAyahs"
-                    )
-                    if (remainingAyahs == 0) {
-                        binding.pageProgressView.progress = 100
-                        binding.downloadMediaProgressBar.visibility = View.INVISIBLE
-                        binding.ayahsNumberToDownloadTextView.visibility = View.INVISIBLE
-                    }
-                    binding.ayahsNumberToDownloadTextView.text =
-                        resources.getString(
-                            R.string.remaining_ayahs_indicator_msg,
-                            remainingAyahs.toString()
-                        )
-//                        "downloading $remainingAyahs ayahs..."
-                    Log.d(
-                        TAG,
-                        "collectProgressFromViewModel: the page progress is  $pageProgress%"
-                    )
-                }
-
             }
 
 
         }
-        // let's keep coding, for the next generation
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.folderUtil.pageProgressFlow.collect { (pageProgress, remainingAyahs) ->
+
+                binding.pageProgressView.progress = pageProgress
+                Log.d(
+                    TAG,
+                    "collectProgressFromViewModel: the remaining ayahs now is $remainingAyahs"
+                )
+                if (remainingAyahs == 0) {
+                    binding.pageProgressView.progress = 100
+                    binding.downloadMediaProgressBar.visibility = View.INVISIBLE
+                }
+                binding.ayahsNumberToDownloadTextView.text =
+                    resources.getString(
+                        R.string.remaining_ayahs_indicator_msg,
+                        remainingAyahs.toString()
+                    )
+//                        "downloading $remainingAyahs ayahs..."
+                Log.d(
+                    TAG,
+                    "collectProgressFromViewModel: the page progress is  $pageProgress%"
+                )
+            }
+        }
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.folderUtil.ayahsTexts.collect {
                 Log.d(TAG, "collectProgressFromViewModel: from fragment ayah text is $it")

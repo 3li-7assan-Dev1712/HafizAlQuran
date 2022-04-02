@@ -99,7 +99,7 @@ class FolderUtil @Inject constructor(@ApplicationContext val context: Context) {
         ayahs.forEach { ayah ->
             // prepare ayahs as text
             val ayahText = HtmlCompat.fromHtml(ayah.text, HtmlCompat.FROM_HTML_MODE_LEGACY)
-            ayahsInString += ayahText
+            ayahsInString += " $ayahText"
             populateAyahText()
             Log.d(TAG, "downloadAyasIntoOnePage: the ayah text is $ayahText")
             val audioUrl = ayah.audio
