@@ -27,6 +27,7 @@
             android:layout_height="match_parent"
             android:autoSizePresetSizes="@array/autosize_text_sizes"
             android:autoSizeTextType="uniform"
+            android:fontFamily="@font/me_quran_volt_newmet"
             android:gravity="fill_vertical"
             android:lineHeight="28dp"
             android:maxLines="15"

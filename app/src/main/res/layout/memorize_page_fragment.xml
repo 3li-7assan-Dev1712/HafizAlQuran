@@ -24,6 +24,7 @@
             android:id="@+id/pageAyahsTextView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fontFamily="@font/me_quran_volt_newmet"
             android:gravity="fill_vertical"
             android:maxLines="15"
             android:minLines="15"
