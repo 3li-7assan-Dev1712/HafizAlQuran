@@ -240,6 +240,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
 
 
         }
+        // let's keep coding, for the next generation
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.folderUtil.ayahsTexts.collect {
                 Log.d(TAG, "collectProgressFromViewModel: from fragment ayah text is $it")

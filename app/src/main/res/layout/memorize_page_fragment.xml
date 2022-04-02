@@ -12,6 +12,8 @@
         android:layout_height="0dp"
         android:gravity="center"
         android:textSize="16sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizePresetSizes="@array/autosize_text_sizes"
         app:layout_constraintBottom_toTopOf="@id/ayahsNumberToDownloadTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
