@@ -41,6 +41,10 @@ class MemorizePageViewModel @Inject constructor(
     stateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    // repeat number
+    private var repeatNumber: Int = 0
+    // repeat tracker
+    private var repeatTracker: Int = 0
 
     // pause indicator
     private var mediaPlayerIsPaused = false
@@ -200,6 +204,7 @@ class MemorizePageViewModel @Inject constructor(
                 prepare()
                 start()
                 sendPlayPauseEventBtn("pause")
+                handleRepeatFunctionality()
             }
         } else {
             Log.d(
@@ -208,6 +213,15 @@ class MemorizePageViewModel @Inject constructor(
             )
         }
 
+    }
+
+    private fun handleRepeatFunctionality() {
+        mPlayer?.setOnCompletionListener {
+            if (repeatNumber > 0 && repeatTracker < repeatNumber) {
+                playMedia()
+                repeatTracker++
+            }
+        }
     }
 
     private fun sendPlayPauseEventBtn(btnLabel: String) =
@@ -256,6 +270,11 @@ class MemorizePageViewModel @Inject constructor(
     fun fragmentDestroyed() {
         mPlayer?.release()
     }
+
+    fun setRepeatNumber(repeatNumber: Int) {
+        this.repeatNumber = repeatNumber
+    }
+
     /**
      * This sealed class is used to express the events of the memorizing page functionality.
      */

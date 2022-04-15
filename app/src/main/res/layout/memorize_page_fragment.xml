@@ -54,6 +54,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         tools:visibility="visible" />
 
+
     <ProgressBar
         android:id="@+id/pageProgressView"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
@@ -101,6 +102,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/playAudioBtn" />
+
+    <Spinner
+        android:id="@+id/numberRepeatSpinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/downloadMediaProgressBar"
+        app:layout_constraintStart_toStartOf="@id/downloadAudioBtn" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

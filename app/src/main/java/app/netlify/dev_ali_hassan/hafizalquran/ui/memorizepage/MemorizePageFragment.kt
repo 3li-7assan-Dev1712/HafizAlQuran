@@ -5,6 +5,8 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -21,7 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
-class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
+class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment), AdapterView.OnItemSelectedListener {
 
     //  request permission
     private val requestMultiplePermissionsLauncher =
@@ -57,6 +59,14 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
 
         if (savedInstanceState != null) return
 
+        ArrayAdapter.createFromResource(
+            requireContext(),
+            R.array.numbers_of_available_repeat_options,
+            androidx.appcompat.R.layout.support_simple_spinner_dropdown_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item)
+            binding.numberRepeatSpinner?.adapter = adapter
+        }
         binding.downloadMediaProgressBar.isVisible = !currentPage.isDownloaded
         binding.downloadAudioBtn.isVisible = !currentPage.isDownloaded
 
@@ -263,5 +273,19 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
 
     private fun showProgressBar() {
         binding.downloadMediaProgressBar.visibility = View.VISIBLE
+    }
+
+    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+
+        when (p2) {
+            0 -> {viewModel.setRepeatNumber(3)}
+            1 -> {viewModel.setRepeatNumber(5)}
+            2 -> {viewModel.setRepeatNumber(10)}
+            3 -> {viewModel.setRepeatNumber(20)}
+        }
+    }
+
+    override fun onNothingSelected(p0: AdapterView<*>?) {
+        TODO("Not yet implemented")
     }
 }

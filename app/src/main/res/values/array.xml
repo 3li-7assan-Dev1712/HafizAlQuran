@@ -7,4 +7,11 @@
         <item>80sp</item>
         <item>120sp</item>
     </array>
+    <array name="numbers_of_available_repeat_options" >
+        <item>3</item>
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>20</item>
+    </array>
 </resources>
