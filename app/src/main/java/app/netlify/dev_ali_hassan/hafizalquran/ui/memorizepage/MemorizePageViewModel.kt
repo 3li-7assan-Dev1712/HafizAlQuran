@@ -249,6 +249,14 @@ class MemorizePageViewModel @Inject constructor(
     }
 
     /**
+     * This function will be called when the fragment is going to be destroyed
+     * to release the player, because the user leave the screen which indicates
+     * they don't want to keep listening.
+     */
+    fun fragmentDestroyed() {
+        mPlayer?.release()
+    }
+    /**
      * This sealed class is used to express the events of the memorizing page functionality.
      */
     sealed class MemorizePageEvents {

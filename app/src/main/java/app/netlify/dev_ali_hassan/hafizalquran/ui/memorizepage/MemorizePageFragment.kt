@@ -103,6 +103,14 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
     }
 
     /**
+     * tell the view model that this fragment is going to be destroyed
+     * to release the media player.
+     */
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.fragmentDestroyed()
+    }
+    /**
      * this function is responsible for listening to the network result that comes from @MemorizePageViewModel
      * the result is a LifeData, so it's easy for the fragment to do such an operation by using
      * viewLifecycleOwner
