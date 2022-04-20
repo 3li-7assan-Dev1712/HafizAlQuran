@@ -55,7 +55,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment), AdapterV
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = MemorizePageFragmentBinding.bind(view)
-        currentPage = arguments?.getParcelable("choosedPage") ?: Page(-1, 0, false, false)
+        currentPage = arguments?.getParcelable("choosedPage") ?: Page("",-1, 0, false, false)
 
         if (savedInstanceState != null) return
 
@@ -110,6 +110,9 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment), AdapterV
         observeNetworkResponseFromViewModel()
         // collect the downloading progress to fill the determined progress bar on the screen.
         collectProgressFromViewModel()
+        if (currentPage.isDownloaded) {
+            binding.pageAyahsTextView.text = currentPage.pageText
+        }
     }
 
     /**
@@ -200,7 +203,9 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment), AdapterV
                     }
 
                     is MemorizePageViewModel.MemorizePageEvents.PlayPauseEvent -> {
-                        binding.playAudioBtn.text = events.playPauseMsg
+                        if (events.isPlay) {
+
+                        }
                     }
                     is MemorizePageViewModel.MemorizePageEvents.ErrorEvent -> {
                         Snackbar.make(

@@ -37,7 +37,9 @@ class FolderUtil @Inject constructor(@ApplicationContext val context: Context) {
     val pageProgressFlow = MutableStateFlow(Pair(0, 0))
 
     private val TAG = "FolderUtil"
-    private var ayahsInString: String = ""
+    var ayahsInString: String = ""
+
+    var ayahsUniCode = ""
 
     fun storeAudioInInternalStorage(fileName: String, data: ByteArray): Boolean {
 
@@ -98,6 +100,7 @@ class FolderUtil @Inject constructor(@ApplicationContext val context: Context) {
         val finalFile = File(folder, "${ayahs[0].page}.mp3")
         ayahs.forEach { ayah ->
             // prepare ayahs as text
+            ayahsUniCode += ayah.text
             val ayahText = HtmlCompat.fromHtml(ayah.text, HtmlCompat.FROM_HTML_MODE_LEGACY)
             ayahsInString += " $ayahText"
             populateAyahText()

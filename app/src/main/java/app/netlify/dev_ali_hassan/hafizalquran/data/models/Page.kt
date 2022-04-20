@@ -8,6 +8,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 @Entity(tableName = "page")
 data class Page(
+    val pageText: String = "",
     val surahIdPageIn: Int,
     val pageNumber: Int,
     val pageIsMemorized: Boolean,

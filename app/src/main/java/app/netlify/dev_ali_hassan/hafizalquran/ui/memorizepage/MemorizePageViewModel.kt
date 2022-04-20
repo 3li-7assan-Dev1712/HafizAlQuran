@@ -96,7 +96,7 @@ class MemorizePageViewModel @Inject constructor(
      * true, then it will show a dialog to let the user know it is successfully downloaded.
      */
     private fun updatePageDownloadStateAndShowSuccessfulMsg() {
-        val updatedPage = selectedPage?.copy(isDownloaded = true)
+        val updatedPage = selectedPage?.copy(isDownloaded = true, pageText = folderUtil.ayahsInString)
         viewModelScope.launch {
             eventsChannel.send(MemorizePageEvents.AudioDownloadCompleted)
 
@@ -179,13 +179,13 @@ class MemorizePageViewModel @Inject constructor(
         if (mPlayer?.isPlaying == true) {
             mPlayer!!.pause()
             mediaPlayerIsPaused = true
-            sendPlayPauseEventBtn("play")
+            sendPlayPauseEventBtn(true)
             return
 
         } else if (mediaPlayerIsPaused) {
             mPlayer?.start()
             mediaPlayerIsPaused = false
-            sendPlayPauseEventBtn("pause")
+            sendPlayPauseEventBtn(isPlay = false)
             return
         }
 
@@ -203,7 +203,7 @@ class MemorizePageViewModel @Inject constructor(
                 setDataSource(file.path)
                 prepare()
                 start()
-                sendPlayPauseEventBtn("pause")
+                sendPlayPauseEventBtn(false)
                 handleRepeatFunctionality()
             }
         } else {
@@ -224,16 +224,10 @@ class MemorizePageViewModel @Inject constructor(
         }
     }
 
-    private fun sendPlayPauseEventBtn(btnLabel: String) =
+    private fun sendPlayPauseEventBtn(isPlay: Boolean) =
         viewModelScope.launch {
-            eventsChannel.send(MemorizePageEvents.PlayPauseEvent(btnLabel))
+            eventsChannel.send(MemorizePageEvents.PlayPauseEvent(isPlay))
         }
-
-    fun userClickedPauseBtn() {
-        /* mPlayer.pause()
-         mediaPlayerIsPaused = true
-         */
-    }
 
     suspend fun receivedAyahsSuccessfully(ayahs: List<Ayah>) {
         storeAyahsIntoOneFile(ayahs)
@@ -255,11 +249,16 @@ class MemorizePageViewModel @Inject constructor(
         if (downloadSuccessful) {
             updatePageDownloadStateAndShowSuccessfulMsg()
             playMedia()
+            cachePageTextInDatabase(folderUtil.ayahsUniCode)
         } else {
             showErrorMessage()
         }
 
 
+    }
+
+    private fun cachePageTextInDatabase(ayahsUniCode: String) {
+        TODO("Not yet implemented")
     }
 
     /**
@@ -279,7 +278,7 @@ class MemorizePageViewModel @Inject constructor(
      * This sealed class is used to express the events of the memorizing page functionality.
      */
     sealed class MemorizePageEvents {
-        data class PlayPauseEvent(val playPauseMsg: String) : MemorizePageEvents()
+        data class PlayPauseEvent(val isPlay: Boolean) : MemorizePageEvents()
         object AudioDownloadCompleted : MemorizePageEvents()
         object ErrorEvent : MemorizePageEvents()
         object DownloadConfirmationEvent : MemorizePageEvents()
