@@ -6,4 +6,8 @@
     <string name="ok">OK</string>
     <string name="memorize_fragment_title">Page Number %s</string>
     <string name="remaining_ayahs_indicator_msg">Downloading %s ayahs…</string>
+    <string name="quranIcon">Quran Icon</string>
+    <string name="analyticsIcon">Analytics</string>
+    <string name="favorites">Favorite</string>
+    <string name="activeReader">Active Reader</string>
 </resources>
