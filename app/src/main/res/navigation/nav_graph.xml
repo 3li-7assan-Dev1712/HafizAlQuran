@@ -38,4 +38,19 @@
             android:name="pageNumber"
             app:argType="integer" />
     </fragment>
+    <fragment
+        android:id="@+id/analyticsFragment2"
+        android:name="app.netlify.dev_ali_hassan.hafizalquran.ui.analytics.AnalyticsFragment"
+        android:label="analytics_fragment"
+        tools:layout="@layout/analytics_fragment" />
+    <fragment
+        android:id="@+id/favoritesFragment2"
+        android:name="app.netlify.dev_ali_hassan.hafizalquran.ui.favorites.FavoritesFragment"
+        android:label="favorites_fragment"
+        tools:layout="@layout/favorites_fragment" />
+    <fragment
+        android:id="@+id/skilledActiveReadersFragment"
+        android:name="app.netlify.dev_ali_hassan.hafizalquran.ui.readers.SkilledActiveReadersFragment"
+        android:label="skillful_active_readers_fragment"
+        tools:layout="@layout/skillful_active_readers_fragment" />
 </navigation>
