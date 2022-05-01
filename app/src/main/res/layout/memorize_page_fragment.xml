@@ -89,8 +89,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
         android:src="@drawable/ic_play"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 
@@ -98,20 +98,22 @@
         android:id="@+id/downloadAudioBtn"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:src="@drawable/ic_download"
         android:layout_marginStart="16dp"
+        android:src="@drawable/ic_download"
         app:layout_constraintBottom_toBottomOf="@id/playAudioBtn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/playAudioBtn" />
 
-    <Spinner
-        android:id="@+id/numberRepeatSpinner"
-        android:layout_width="0dp"
+    <ImageView
+        android:id="@+id/repeatSpecificTirmIv"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/downloadMediaProgressBar"
-        app:layout_constraintStart_toStartOf="@id/downloadAudioBtn" />
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_repeat"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/playAudioBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/playAudioBtn" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

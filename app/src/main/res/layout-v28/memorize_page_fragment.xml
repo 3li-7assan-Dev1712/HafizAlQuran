@@ -81,26 +81,37 @@
 
         tools:text="Downloading 5 ayahs..." />
 
-    <Button
+    <ImageView
         android:id="@+id/playAudioBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
-        android:text="Play"
+        android:src="@drawable/ic_play"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 
-    <Button
+    <ImageView
         android:id="@+id/downloadAudioBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="download"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_download"
         app:layout_constraintBottom_toBottomOf="@id/playAudioBtn"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/playAudioBtn" />
 
+    <ImageView
+        android:id="@+id/repeatSpecificTirmIv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_repeat"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/playAudioBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/playAudioBtn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

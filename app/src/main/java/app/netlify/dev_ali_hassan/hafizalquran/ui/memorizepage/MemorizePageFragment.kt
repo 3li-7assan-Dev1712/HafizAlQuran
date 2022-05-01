@@ -59,16 +59,9 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment), AdapterV
 
         if (savedInstanceState != null) return
 
-        ArrayAdapter.createFromResource(
-            requireContext(),
-            R.array.numbers_of_available_repeat_options,
-            androidx.appcompat.R.layout.support_simple_spinner_dropdown_item
-        ).also { adapter ->
-            adapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item)
-            binding.numberRepeatSpinner?.adapter = adapter
-        }
         binding.downloadMediaProgressBar.isVisible = !currentPage.isDownloaded
         binding.downloadAudioBtn.isVisible = !currentPage.isDownloaded
+        binding.repeatSpecificTirmIv.isVisible = currentPage.isDownloaded
 
         // check the permission
         when {
@@ -204,7 +197,9 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment), AdapterV
 
                     is MemorizePageViewModel.MemorizePageEvents.PlayPauseEvent -> {
                         if (events.isPlay) {
-
+                            binding.playAudioBtn.setImageResource(R.drawable.ic_play)
+                        } else {
+                            binding.playAudioBtn.setImageResource(R.drawable.ic_pause)
                         }
                     }
                     is MemorizePageViewModel.MemorizePageEvents.ErrorEvent -> {
@@ -263,12 +258,16 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment), AdapterV
                 )
             }
         }
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.folderUtil.ayahsTexts.collect {
-                Log.d(TAG, "collectProgressFromViewModel: from fragment ayah text is $it")
-                binding.pageAyahsTextView.text = it
+
+        if (!currentPage.isDownloaded) {
+            viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+                viewModel.folderUtil.ayahsTexts.collect {
+                    Log.d(TAG, "collectProgressFromViewModel: from fragment ayah text is $it")
+                    binding.pageAyahsTextView.text = it
+                }
             }
         }
+
     }
 
     private fun startDownloadMedia() {

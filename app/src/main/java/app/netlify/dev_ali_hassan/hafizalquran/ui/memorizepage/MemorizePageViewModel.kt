@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.io.File
+import java.util.*
 import javax.inject.Inject
 
 
@@ -49,6 +50,7 @@ class MemorizePageViewModel @Inject constructor(
     // pause indicator
     private var mediaPlayerIsPaused = false
 
+    private val timmer = Timer()
     // page data
     val pageDataFromServer: MutableLiveData<Resource<QuranApiResponse>> = MutableLiveData()
 
