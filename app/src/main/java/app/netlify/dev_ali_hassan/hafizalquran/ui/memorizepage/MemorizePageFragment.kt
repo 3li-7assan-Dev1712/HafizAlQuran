@@ -5,8 +5,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -23,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
-class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment), AdapterView.OnItemSelectedListener {
+class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
 
     //  request permission
     private val requestMultiplePermissionsLauncher =
@@ -55,7 +53,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment), AdapterV
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = MemorizePageFragmentBinding.bind(view)
-        currentPage = arguments?.getParcelable("choosedPage") ?: Page("",-1, 0, false, false)
+        currentPage = arguments?.getParcelable("choosedPage") ?: Page("", -1, 0, false, false)
 
         if (savedInstanceState != null) return
 
@@ -116,6 +114,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment), AdapterV
         super.onDestroyView()
         viewModel.fragmentDestroyed()
     }
+
     /**
      * this function is responsible for listening to the network result that comes from @MemorizePageViewModel
      * the result is a LifeData, so it's easy for the fragment to do such an operation by using
@@ -279,17 +278,5 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment), AdapterV
         binding.downloadMediaProgressBar.visibility = View.VISIBLE
     }
 
-    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
 
-        when (p2) {
-            0 -> {viewModel.setRepeatNumber(3)}
-            1 -> {viewModel.setRepeatNumber(5)}
-            2 -> {viewModel.setRepeatNumber(10)}
-            3 -> {viewModel.setRepeatNumber(20)}
-        }
-    }
-
-    override fun onNothingSelected(p0: AdapterView<*>?) {
-        TODO("Not yet implemented")
-    }
 }

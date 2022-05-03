@@ -15,6 +15,7 @@ import app.netlify.dev_ali_hassan.hafizalquran.api.dataclasses.QuranApiResponse
 import app.netlify.dev_ali_hassan.hafizalquran.data.daos.PageDao
 import app.netlify.dev_ali_hassan.hafizalquran.data.models.Page
 import app.netlify.dev_ali_hassan.hafizalquran.repository.QuranRepository
+import app.netlify.dev_ali_hassan.hafizalquran.util.CountDownTimerUtil
 import app.netlify.dev_ali_hassan.hafizalquran.util.FolderUtil
 import app.netlify.dev_ali_hassan.hafizalquran.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +24,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.io.File
-import java.util.*
 import javax.inject.Inject
 
 
@@ -42,15 +42,14 @@ class MemorizePageViewModel @Inject constructor(
     stateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    // repeat number
-    private var repeatNumber: Int = 0
-    // repeat tracker
-    private var repeatTracker: Int = 0
-
     // pause indicator
     private var mediaPlayerIsPaused = false
 
-    private val timmer = Timer()
+    private var mTimer: CountDownTimerUtil? = null
+
+    private var currentPosition = 0
+
+
     // page data
     val pageDataFromServer: MutableLiveData<Resource<QuranApiResponse>> = MutableLiveData()
 
@@ -98,7 +97,8 @@ class MemorizePageViewModel @Inject constructor(
      * true, then it will show a dialog to let the user know it is successfully downloaded.
      */
     private fun updatePageDownloadStateAndShowSuccessfulMsg() {
-        val updatedPage = selectedPage?.copy(isDownloaded = true, pageText = folderUtil.ayahsInString)
+        val updatedPage =
+            selectedPage?.copy(isDownloaded = true, pageText = folderUtil.ayahsInString)
         viewModelScope.launch {
             eventsChannel.send(MemorizePageEvents.AudioDownloadCompleted)
 
@@ -121,6 +121,18 @@ class MemorizePageViewModel @Inject constructor(
 
     }
 
+
+    private fun initTimer(duration: Long) {
+        mTimer = object : CountDownTimerUtil(duration, 0) {
+            override fun onTimerTick(millisUntilFinished: Long) {
+                Log.d(TAG, "onTimerTick: $millisUntilFinished until finish")
+            }
+
+            override fun onTimerFinish() {
+                repeatTopTerm()
+            }
+        }
+    }
 
     /**
      * This method will be called from the fragment to tell the view model that the user clicked
@@ -182,10 +194,12 @@ class MemorizePageViewModel @Inject constructor(
             mPlayer!!.pause()
             mediaPlayerIsPaused = true
             sendPlayPauseEventBtn(true)
+            mTimer?.pause()
             return
 
         } else if (mediaPlayerIsPaused) {
             mPlayer?.start()
+            mTimer?.start()
             mediaPlayerIsPaused = false
             sendPlayPauseEventBtn(isPlay = false)
             return
@@ -206,7 +220,7 @@ class MemorizePageViewModel @Inject constructor(
                 prepare()
                 start()
                 sendPlayPauseEventBtn(false)
-                handleRepeatFunctionality()
+
             }
         } else {
             Log.d(
@@ -217,14 +231,6 @@ class MemorizePageViewModel @Inject constructor(
 
     }
 
-    private fun handleRepeatFunctionality() {
-        mPlayer?.setOnCompletionListener {
-            if (repeatNumber > 0 && repeatTracker < repeatNumber) {
-                playMedia()
-                repeatTracker++
-            }
-        }
-    }
 
     private fun sendPlayPauseEventBtn(isPlay: Boolean) =
         viewModelScope.launch {
@@ -251,16 +257,21 @@ class MemorizePageViewModel @Inject constructor(
         if (downloadSuccessful) {
             updatePageDownloadStateAndShowSuccessfulMsg()
             playMedia()
-            cachePageTextInDatabase(folderUtil.ayahsUniCode)
+            cachePageTextInDatabase(folderUtil.ayahsInString)
         } else {
             showErrorMessage()
         }
 
-
     }
 
-    private fun cachePageTextInDatabase(ayahsUniCode: String) {
-        TODO("Not yet implemented")
+
+    private fun cachePageTextInDatabase(pageText: String) {
+        viewModelScope.launch {
+            val updatedPage = selectedPage?.copy(pageText = pageText, isDownloaded = true)
+            if (updatedPage != null) {
+                pageDao.updatePage(updatedPage)
+            }
+        }
     }
 
     /**
@@ -272,8 +283,21 @@ class MemorizePageViewModel @Inject constructor(
         mPlayer?.release()
     }
 
-    fun setRepeatNumber(repeatNumber: Int) {
-        this.repeatNumber = repeatNumber
+    fun repeatTopTerm() {
+        if (!mediaPlayerIsPaused) return
+        currentPosition = mPlayer?.currentPosition ?: 0
+        val duration = mPlayer?.currentPosition ?: 0
+        initTimer(duration.toLong())
+        mPlayer?.pause()
+        mPlayer?.seekTo(0)
+        mPlayer?.start()
+        mTimer?.start()
+
+
+    }
+
+    fun repeatBottomTerm() {
+
     }
 
     /**
