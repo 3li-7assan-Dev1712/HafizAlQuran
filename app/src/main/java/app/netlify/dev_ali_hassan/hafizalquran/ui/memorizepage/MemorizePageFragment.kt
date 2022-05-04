@@ -28,7 +28,7 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
-            permissions.entries.forEach {
+            permissions.entries.forEach { _ ->
                 // make cause a problem, will be considered soon
             }
             // download if the page is not already downloaded
@@ -40,9 +40,6 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
     // using view binding
     private lateinit var binding: MemorizePageFragmentBinding
 
-    //TAG for logging
-    private val TAG = "MemorizePageFragment"
-
     // the view model for this fragment to delegate all the business logic for it
     private val viewModel: MemorizePageViewModel by viewModels()
 
@@ -53,7 +50,11 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = MemorizePageFragmentBinding.bind(view)
-        currentPage = arguments?.getParcelable("choosedPage") ?: Page("", -1, 0, false, false)
+        currentPage = arguments?.getParcelable("choosedPage") ?: Page(
+            "", -1, 0,
+            pageIsMemorized = false,
+            isDownloaded = false
+        )
 
         if (savedInstanceState != null) return
 
@@ -92,6 +93,9 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
             downloadAudioBtn.setOnClickListener {
                 showProgressBar()
                 viewModel.userConfirmDownloadOperation()
+            }
+            repeatSpecificTirmIv.setOnClickListener {
+                viewModel.repeatTopTerm()
             }
         }
 
@@ -279,4 +283,8 @@ class MemorizePageFragment : Fragment(R.layout.memorize_page_fragment) {
     }
 
 
+    companion object {
+
+        const val TAG = "MemorizePageFragment"
+    }
 }

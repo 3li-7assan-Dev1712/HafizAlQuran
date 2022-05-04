@@ -239,15 +239,7 @@ class MemorizePageViewModel @Inject constructor(
 
     suspend fun receivedAyahsSuccessfully(ayahs: List<Ayah>) {
         storeAyahsIntoOneFile(ayahs)
-        /*if (index == ayahs.size) return
 
-        Log.d(TAG, "receivedAyahsSuccessfully: the number of Ayahs in this page is ${ayahs.size}")
-        mPlayer = folderUtil.provideMediaPlayer(ayahs[index])
-        mPlayer.start()
-        mPlayer.setOnCompletionListener {
-            index++
-            receivedAyahsSuccessfully(ayahs)
-        }*/
     }
 
     private suspend fun storeAyahsIntoOneFile(ayahs: List<Ayah>) {
@@ -284,7 +276,7 @@ class MemorizePageViewModel @Inject constructor(
     }
 
     fun repeatTopTerm() {
-        if (!mediaPlayerIsPaused) return
+        /*if (!mediaPlayerIsPaused) return*/
         currentPosition = mPlayer?.currentPosition ?: 0
         val duration = mPlayer?.currentPosition ?: 0
         initTimer(duration.toLong())
@@ -292,13 +284,8 @@ class MemorizePageViewModel @Inject constructor(
         mPlayer?.seekTo(0)
         mPlayer?.start()
         mTimer?.start()
-
-
     }
 
-    fun repeatBottomTerm() {
-
-    }
 
     /**
      * This sealed class is used to express the events of the memorizing page functionality.
