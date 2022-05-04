@@ -10,4 +10,5 @@
     <string name="analyticsIcon">Analytics</string>
     <string name="favorites">Favorite</string>
     <string name="activeReader">Active Reader</string>
+    <string name="cancel">cancel</string>
 </resources>
