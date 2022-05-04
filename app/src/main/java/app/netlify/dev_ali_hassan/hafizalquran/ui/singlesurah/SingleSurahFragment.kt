@@ -70,7 +70,7 @@ class SingleSurahFragment : Fragment(R.layout.single_surah_fragment),
 
     private fun navigateToMemorizePageFragment(page: Page) {
         Log.d("TAG", "navigateToMemorizePageFragment: should navigate to that fragment")
-        val data = bundleOf("choosedPage" to page, "pageNumber" to page.pageNumber)
+        val data = bundleOf("choosedPage" to page, "pageNumber" to page.pageNumber, "surahName" to "")
         findNavController().navigate(R.id.action_singleSurahFragment_to_memorizePageFragment, data)
     }
 

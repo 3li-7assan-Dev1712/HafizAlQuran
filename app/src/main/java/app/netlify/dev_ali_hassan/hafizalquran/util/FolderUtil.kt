@@ -11,6 +11,7 @@ import android.os.Environment
 import android.util.Log
 import androidx.core.text.HtmlCompat
 import app.netlify.dev_ali_hassan.hafizalquran.api.dataclasses.Ayah
+import app.netlify.dev_ali_hassan.hafizalquran.data.models.Page
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,8 +20,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import javax.inject.Inject
-
-private const val MB = 1024000
 
 class FolderUtil @Inject constructor(@ApplicationContext val context: Context) {
 
@@ -63,6 +62,18 @@ class FolderUtil @Inject constructor(@ApplicationContext val context: Context) {
         val files = context.filesDir.listFiles()
         return try {
             files?.filter { it.name.endsWith(".mp3") }?.map {
+                it
+            } ?: listOf()
+        } catch (ioe: IOException) {
+            ioe.printStackTrace()
+            listOf()
+        }
+
+    }
+    fun loadPageAyahsFileFromStorage(page: Page): List<File> {
+        val files = context.filesDir.listFiles()
+        return try {
+            files?.filter { it.name.startsWith("_${page.pageNumber}_")}?.map {
                 it
             } ?: listOf()
         } catch (ioe: IOException) {
@@ -175,6 +186,68 @@ class FolderUtil @Inject constructor(@ApplicationContext val context: Context) {
         }
 
 */
+    }
+
+    suspend fun storeAyasInInternalStorage(ayahs: List<Ayah>): Boolean {
+
+        val root =
+            File(
+                "${context.applicationContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)}/.hafizalquran",
+                "${ayahs[0].page}.mp3"
+            )
+        // if the file is already exists that means it is already downloaded, so return.
+        if (root.exists()) {
+            Log.d(TAG, "downloadAyasIntoOnePage: return directly the file is already exists!")
+            return true
+        }
+        val appFolder = File(
+            "${context.applicationContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)}"
+        )
+        val folder = File(appFolder, ".hafizalquran")
+        if (!folder.exists()) {
+            folder.mkdirs()
+            Log.d(TAG, "downloadAyasIntoOnePage: created folder")
+        }
+        var counter = 1
+        ayahs.forEach { ayah ->
+            // prepare ayahs as text
+            val ayahText = HtmlCompat.fromHtml(ayah.text, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            ayahsInString += " $ayahText"
+            populateAyahText()
+            val audioUrl = ayah.audio
+            val subFile = File(folder, "_${ayah.page}_$counter.mp3")
+            counter++
+            val request = DownloadManager.Request(Uri.parse(audioUrl))
+                .setNotificationVisibility(VISIBILITY_VISIBLE)
+                .setTitle(ayah.surah.name)
+                .setDescription("Downloading...")
+                .setAllowedOverMetered(true)
+                .setAllowedOverRoaming(true)
+                .setDestinationUri(Uri.fromFile(subFile))
+
+            val downloadManager = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+            val downloadId = downloadManager.enqueue(request)
+
+            var finishDownload = false
+            while (!finishDownload) {
+
+                val cursor =
+                    downloadManager.query(DownloadManager.Query().setFilterById(downloadId))
+                if (cursor.moveToFirst()) {
+                    var index = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                    if (index == -1) index = 0
+                    val status =
+                        cursor.getInt(index)
+                    finishDownload = handleStatus(status, cursor)
+                    if (finishDownload) {
+                        storeAudioInInternalStorage(subFile.name, subFile.readBytes())
+
+                    }
+                }
+                cursor?.close()
+            }
+        }
+        return true
     }
 
     private suspend fun handleStatus(status: Int, cursor: Cursor): Boolean {

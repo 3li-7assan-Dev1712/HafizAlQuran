@@ -40,7 +40,7 @@ class MemorizePageViewModel @Inject constructor(
     var folderUtil: FolderUtil,
     val pageDao: PageDao,
     stateHandle: SavedStateHandle
-) : ViewModel() {
+) : ViewModel(), MediaPlayer.OnCompletionListener {
 
     // pause indicator
     private var mediaPlayerIsPaused = false
@@ -49,6 +49,9 @@ class MemorizePageViewModel @Inject constructor(
 
     private var currentPosition = 0
 
+    private var fileList: List<File>? = null
+    private var mIndex: Int = 0
+    private var mNumberOfAyahsToRepeat: Int = 0
 
     // page data
     val pageDataFromServer: MutableLiveData<Resource<QuranApiResponse>> = MutableLiveData()
@@ -195,6 +198,7 @@ class MemorizePageViewModel @Inject constructor(
             mediaPlayerIsPaused = true
             sendPlayPauseEventBtn(true)
             mTimer?.pause()
+            Log.d(TAG, "playMedia: returning")
             return
 
         } else if (mediaPlayerIsPaused) {
@@ -202,33 +206,39 @@ class MemorizePageViewModel @Inject constructor(
             mTimer?.start()
             mediaPlayerIsPaused = false
             sendPlayPauseEventBtn(isPlay = false)
+            Log.d(TAG, "playMedia: returning")
             return
         }
 
-        val files =
-            loadFileFromInternalStorage().filter { it.name == "${selectedPage?.pageNumber}.mp3" }
-        if (files.isNotEmpty()) {
-            val file = files[0]
-            mPlayer = MediaPlayer().apply {
-                setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .build()
-                )
-                setDataSource(file.path)
-                prepare()
-                start()
-                sendPlayPauseEventBtn(false)
+        if (fileList != null) Log.d(TAG, "playMedia: there are ${fileList?.size} ayahs in this list ")
+        else Log.d(TAG, "playMedia: the lis is null man!")
 
-            }
-        } else {
-            Log.d(
-                TAG,
-                "playMedia: file is empty"
-            )
+        fileList?.let {
+
+            if (fileList!!.isEmpty()) return
+            val currentFile = it[mIndex]
+            preparePlayAyahFile(currentFile)
+
         }
 
+
+    }
+
+    private fun preparePlayAyahFile(currentFile: File) {
+        Log.d(TAG, "preparePlayAyahFile: *_*")
+        mPlayer = MediaPlayer().apply {
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build()
+            )
+            setDataSource(currentFile.path)
+            prepare()
+            start()
+            sendPlayPauseEventBtn(false)
+        }
+        mPlayer?.setOnCompletionListener(this)
     }
 
 
@@ -238,8 +248,21 @@ class MemorizePageViewModel @Inject constructor(
         }
 
     suspend fun receivedAyahsSuccessfully(ayahs: List<Ayah>) {
-        storeAyahsIntoOneFile(ayahs)
+//        storeAyahsIntoOneFile(ayahs)
+        val result = folderUtil.storeAyasInInternalStorage(ayahs)
+        if (result) {
+            updatePageDownloadStateAndShowSuccessfulMsg()
+            if (surahName != null && selectedPage != null) {
+                fileList = folderUtil.loadPageAyahsFileFromStorage(selectedPage!!)
+            } else {
+                Log.d(TAG, "receivedAyahsSuccessfully: surahName or page is null")
+            }
+            cachePageTextInDatabase(folderUtil.ayahsInString)
+            playMedia()
 
+        } else {
+            Log.e(TAG, "the result should be true but now make it false.")
+        }
     }
 
     private suspend fun storeAyahsIntoOneFile(ayahs: List<Ayah>) {
@@ -262,6 +285,7 @@ class MemorizePageViewModel @Inject constructor(
             val updatedPage = selectedPage?.copy(pageText = pageText, isDownloaded = true)
             if (updatedPage != null) {
                 pageDao.updatePage(updatedPage)
+                selectedPage = updatedPage
             }
         }
     }
@@ -296,5 +320,16 @@ class MemorizePageViewModel @Inject constructor(
         object ErrorEvent : MemorizePageEvents()
         object DownloadConfirmationEvent : MemorizePageEvents()
         object AudioIsNotAvailable : MemorizePageEvents()
+    }
+
+    override fun onCompletion(p0: MediaPlayer?) {
+        fileList?.let {
+            mIndex++
+            if (mIndex == fileList!!.size || mIndex == mNumberOfAyahsToRepeat) {
+                mIndex = 0
+            }
+            val currentFile = fileList!![mIndex]
+            preparePlayAyahFile(currentFile)
+        }
     }
 }
