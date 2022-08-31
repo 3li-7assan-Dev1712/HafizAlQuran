@@ -24,9 +24,16 @@ class AllSurahsViewModel @Inject constructor(
     private val surahEventsChannel = Channel<SurahsEvents>()
     val surahEventsFlow = surahEventsChannel.receiveAsFlow()
 
+    /**
+     * This function will be called from the fragment (The Fragment: Hey ViewModel the user clicks
+     * an item in the screen, ViewModel: Okay fragment navigate to the single Fragment screen!)
+     *
+     * @param selectedSurah: Surah the selected surah by the user to be used in populating the
+     * SingleSurahFragment
+     */
     fun surahIsSelected(selectedSurah: Surah) {
         viewModelScope.launch {
-            // tell the fragment what to navigate to SingleSurahFragment
+            // tell the fragment to navigate to SingleSurahFragment
             surahEventsChannel.send(SurahsEvents.NavigateToSingleSurahFragment(selectedSurah))
         }
     }

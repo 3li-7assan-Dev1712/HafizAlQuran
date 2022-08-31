@@ -13,6 +13,7 @@ import app.netlify.dev_ali_hassan.hafizalquran.R
 import app.netlify.dev_ali_hassan.hafizalquran.data.models.Page
 import app.netlify.dev_ali_hassan.hafizalquran.data.models.Surah
 import app.netlify.dev_ali_hassan.hafizalquran.databinding.SingleSurahFragmentBinding
+import app.netlify.dev_ali_hassan.hafizalquran.ui.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -37,6 +38,9 @@ class SingleSurahFragment : Fragment(R.layout.single_surah_fragment),
         super.onViewCreated(view, savedInstanceState)
         binding = SingleSurahFragmentBinding.bind(view)
 
+        // tell the view ViewModel the fragment is created to give the fragment an order
+        // to hide the bottom nav graph.
+        pagesViewModel.fragmentHasOpen()
         currentSelectedSurah = (arguments?.get("selectedSurah") ?: Surah(
             surahName = "سورة البقرة",
             surahState = 2,
@@ -54,12 +58,18 @@ class SingleSurahFragment : Fragment(R.layout.single_surah_fragment),
             }
 
         }
+        // listen to orders from the view model
         viewLifecycleOwner.lifecycleScope.launch {
             pagesViewModel.eventsFlow.collect { event ->
                 when (event) {
                     is SingleSurahViewModel.SingleSurahEvents.UserChoosePage -> {
                         Log.d(TAG, "onViewCreated: when is working")
                         navigateToMemorizePageFragment(event.choosedPage)
+                    }
+                    is SingleSurahViewModel.SingleSurahEvents.HideBottomNavGraph -> {
+                        Log.d(TAG, "collected the order of hiding bottom nav, should hide it!")
+                        // can cause an error *_*
+                        (activity as MainActivity).binding.bottomNav.visibility = View.GONE
                     }
                 }
             }

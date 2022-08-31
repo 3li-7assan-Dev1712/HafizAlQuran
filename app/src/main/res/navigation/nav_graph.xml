@@ -13,6 +13,15 @@
         <action
             android:id="@+id/action_allSurahsFragment_to_singleSurahFragment"
             app:destination="@id/singleSurahFragment" />
+        <action
+            android:id="@+id/action_allSurahsFragment_to_analyticsFragment"
+            app:destination="@id/analyticsFragment" />
+        <action
+            android:id="@+id/action_allSurahsFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
+        <action
+            android:id="@+id/action_allSurahsFragment_to_bestActiveReader"
+            app:destination="@id/bestActiveReader" />
     </fragment>
     <fragment
         android:id="@+id/singleSurahFragment"
@@ -39,17 +48,17 @@
             app:argType="integer" />
     </fragment>
     <fragment
-        android:id="@+id/analyticsFragment2"
+        android:id="@+id/analyticsFragment"
         android:name="app.netlify.dev_ali_hassan.hafizalquran.ui.analytics.AnalyticsFragment"
         android:label="analytics_fragment"
         tools:layout="@layout/analytics_fragment" />
     <fragment
-        android:id="@+id/favoritesFragment2"
+        android:id="@+id/favoritesFragment"
         android:name="app.netlify.dev_ali_hassan.hafizalquran.ui.favorites.FavoritesFragment"
         android:label="favorites_fragment"
         tools:layout="@layout/favorites_fragment" />
     <fragment
-        android:id="@+id/skilledActiveReadersFragment"
+        android:id="@+id/bestActiveReader"
         android:name="app.netlify.dev_ali_hassan.hafizalquran.ui.readers.SkilledActiveReadersFragment"
         android:label="skillful_active_readers_fragment"
         tools:layout="@layout/skillful_active_readers_fragment" />

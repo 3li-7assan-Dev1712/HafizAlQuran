@@ -3,40 +3,99 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
-    android:paddingBottom="16dp"
-    android:paddingStart="16dp">
+    android:layout_height="300dp"
+    android:paddingStart="16dp"
+    android:paddingBottom="16dp">
+
+    <TextView
+        android:id="@+id/repeat_ayah_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="Repeat Ayahs"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@id/increase_repeat_couontIV"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/repeat_each_ayah_number_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="Repeat Ayahs"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@id/increase_repeat_couontIV"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/repeat_countTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/increase_repeat_couontIV"
         app:layout_constraintStart_toStartOf="@+id/increase_repeat_couontIV"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/increase_repeat_couontIV"
         tools:text="3" />
 
     <ImageView
         android:id="@+id/decrease_repeat_countIV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:padding="16dp"
         android:src="@drawable/ic_bottom_arrow"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/repeat_countTV"
         app:srcCompat="@drawable/ic_bottom_arrow" />
 
-    <androidx.constraintlayout.utils.widget.ImageFilterView
+    <ImageView
         android:id="@+id/increase_repeat_couontIV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:padding="16dp"
         android:src="@drawable/ic_top_arrow"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/repeat_each_ayah_number_label" />
+
+    <TextView
+        android:id="@+id/repeat_number_ayah_countTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/increase_repeat_ayah_couontIV"
+        app:layout_constraintStart_toStartOf="@+id/increase_repeat_ayah_couontIV"
+        app:layout_constraintTop_toBottomOf="@id/increase_repeat_couontIV"
+        tools:text="5" />
+
+    <ImageView
+        android:id="@+id/decrease_repeat_ayah_countIV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:padding="16dp"
+        android:src="@drawable/ic_bottom_arrow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/repeat_countTV"
+        app:srcCompat="@drawable/ic_bottom_arrow" />
+
+    <ImageView
+        android:id="@+id/increase_repeat_ayah_couontIV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:padding="16dp"
+        android:src="@drawable/ic_top_arrow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/repeat_ayah_label" />
 
     <Button
         android:id="@+id/repeat_confirmation_button"
@@ -56,5 +115,41 @@
         android:text="@string/cancel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/repeat_confirmation_button" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@id/repeat_countTV"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/repeat_countTV">
+
+        <ImageView
+            android:id="@+id/repeat_top_secotorIV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:padding="16dp"
+            android:src="@drawable/ic_top_arrow"
+            app:layout_constraintBottom_toBottomOf="@id/repeat_countTV"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/repeat_countTV"
+            tools:background="@color/purple_500" />
+
+        <ImageView
+            android:id="@+id/repeat_bottom_sectorIV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:padding="16dp"
+            android:src="@drawable/ic_bottom_arrow"
+            app:layout_constraintBottom_toBottomOf="@id/repeat_countTV"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/repeat_countTV" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

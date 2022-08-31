@@ -27,6 +27,12 @@ class SingleSurahViewModel @Inject constructor(
     fun getPagesOfSurahWithId(surahId: Int): Flow<List<Page>> =
         pageDao.getSurahById(surahId)
 
+    fun fragmentHasOpen() {
+        viewModelScope.launch {
+            Log.d(TAG, "going to order fragment to hide the bottom nav")
+            eventChannel.send(SingleSurahEvents.HideBottomNavGraph)
+        }
+    }
 
     fun userClickedPage(clickedPage: Page, position: Int) {
         Log.d(TAG, "userClickedPage: giving the fragment the order of navigating to that screen")
@@ -40,6 +46,7 @@ class SingleSurahViewModel @Inject constructor(
     sealed class SingleSurahEvents {
         data class UserChoosePage(val choosedPage: Page, val surahName: String, val position: Int) :
             SingleSurahEvents()
+        object HideBottomNavGraph: SingleSurahEvents()
     }
 
 

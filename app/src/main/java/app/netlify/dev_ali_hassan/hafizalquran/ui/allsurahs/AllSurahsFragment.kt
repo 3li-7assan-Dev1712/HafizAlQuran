@@ -61,9 +61,12 @@ class AllSurahsFragment : Fragment(R.layout.all_surahs_fragment), AllSurahsAdapt
 
     }
 
-    /*the method will be called when a user select a specific Surah.
+    /*
+    the method will be called when a user select a specific Surah.
     * for the separation of concern we will delegate to work to
-    * a view model to tell the fragment what to do when a user select a Surah.*/
+    * a view model to tell the fragment what to do when a user select a Surah.
+    *
+    */
     override fun onSurahSelected(selectedSurah: Surah) {
         surahsViewModel.surahIsSelected(selectedSurah)
     }

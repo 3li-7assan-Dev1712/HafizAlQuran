@@ -18,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
     private lateinit var navController: NavController
-    private lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,13 +55,14 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     ) {
         Log.d(TAG, "onDestinationChanged: the new id is ${destination.id}")
         Log.d(TAG, "onDestinationChanged: single fragment id is ${R.id.singleSurahFragment}")
-        if (destination.id == 2131362205) {
+
+        /*if (destination.id == 2131362205) {
             binding.bottomNav.visibility = View.GONE
             Log.d(TAG, "onDestinationChanged: the bottom nav should be disappeared")
         } else {
             binding.bottomNav.visibility = View.VISIBLE
             Log.d(TAG, "onDestinationChanged: the bottom nav should not be disappeared")
-        }
+        }*/
     }
 
     companion object {
