@@ -19,7 +19,7 @@
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:itemTextAppearanceActive="?android:textAppearanceMedium"
         app:labelVisibilityMode="selected"
         app:layout_constraintBottom_toBottomOf="parent"

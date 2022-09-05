@@ -3,14 +3,16 @@ package app.netlify.dev_ali_hassan.hafizalquran.ui
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupWithNavController
 import app.netlify.dev_ali_hassan.hafizalquran.R
 import app.netlify.dev_ali_hassan.hafizalquran.databinding.ActivityMainBinding
+import app.netlify.dev_ali_hassan.hafizalquran.ui.allsurahs.AllSurahsViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,6 +20,11 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
     private lateinit var navController: NavController
+
+    private lateinit var bottomNav: BottomNavigationView
+
+    private val surahsViewModel: AllSurahsViewModel by viewModels()
+
     lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,15 +36,18 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         binding = ActivityMainBinding.inflate(layoutInflater)
         /*setupActionBarWithNavController(navController)*/
 
-
-    }
-
-    override fun onStart() {
-        super.onStart()
-        val bottomNav: BottomNavigationView = findViewById(R.id.bottom_nav)
-        NavigationUI.setupWithNavController(bottomNav, navController)
+        bottomNav = findViewById(R.id.bottom_nav)
+        bottomNav.setupWithNavController(navController)
         navController.addOnDestinationChangedListener(this)
+
+
     }
+
+    /*  override fun onStart() {
+          super.onStart()
+
+
+      }*/
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
@@ -53,16 +63,25 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         destination: NavDestination,
         arguments: Bundle?
     ) {
-        Log.d(TAG, "onDestinationChanged: the new id is ${destination.id}")
-        Log.d(TAG, "onDestinationChanged: single fragment id is ${R.id.singleSurahFragment}")
 
-        /*if (destination.id == 2131362205) {
-            binding.bottomNav.visibility = View.GONE
-            Log.d(TAG, "onDestinationChanged: the bottom nav should be disappeared")
-        } else {
-            binding.bottomNav.visibility = View.VISIBLE
-            Log.d(TAG, "onDestinationChanged: the bottom nav should not be disappeared")
-        }*/
+        /*
+        when the user navigates to the screen of a single Surah or Page hide
+        the bottom navigation view, otherwise show it.
+         */
+        when (destination.id) {
+            R.id.singleSurahFragment -> {
+                bottomNav.visibility = View.GONE
+                Log.d(TAG, "onDestinationChanged: the bottom nav should be disappeared")
+            }
+            R.id.memorizePageFragment -> {
+                bottomNav.visibility = View.GONE
+                Log.d(TAG, "onDestinationChanged: the bottom nav should be disappeared")
+            }
+            else -> {
+                bottomNav.visibility = View.VISIBLE
+                Log.d(TAG, "onDestinationChanged: the bottom nav should not be disappeared")
+            }
+        }
     }
 
     companion object {
